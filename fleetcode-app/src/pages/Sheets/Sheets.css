@@ -105,3 +105,26 @@
   font-weight: 600;
   color: var(--primary);
 }
+
+/* ── Responsive Media Queries ── */
+@media (max-width: 768px) {
+  .sheets-body {
+    padding: 16px;
+    gap: 24px;
+  }
+  .sheets-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .sheets-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sheets-grid {
+    grid-template-columns: 1fr;
+  }
+}

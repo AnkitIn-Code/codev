@@ -392,3 +392,54 @@
 .sb-collapsed .sb-collapse-toggle {
   margin: 0 auto;
 }
+
+/* ── Mobile Drawer (< 860px) ── */
+.sb-mobile-close-btn {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .sb-container {
+    transform: translateX(-100%);
+    width: 280px !important;
+    max-width: 85vw;
+    z-index: 100;
+    box-shadow: none;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sb-container.sb-mobile-open {
+    transform: translateX(0);
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.35);
+  }
+
+  .sb-collapse-toggle {
+    display: none !important;
+  }
+
+  .sb-mobile-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .sb-mobile-close-btn:hover {
+    color: var(--text);
+    border-color: var(--border-hover);
+    background: var(--bg-hover);
+  }
+
+  /* Ensure items in mobile drawer look full and clickable */
+  .sb-item {
+    padding: 11px 14px;
+  }
+}

@@ -409,3 +409,38 @@
     width: 100%;
   }
 }
+
+@media (max-width: 640px) {
+  .sd-page {
+    padding: 16px 14px 48px;
+    gap: 16px;
+  }
+  .sd-hero-card {
+    padding: 16px;
+  }
+  .sd-hero-title {
+    font-size: 20px;
+  }
+  .sd-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .sd-diff-pills {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  .sd-diff-pill {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .sd-search-box {
+    width: 100%;
+    min-width: 100%;
+  }
+  .sd-node-item {
+    padding: 8px 12px;
+  }
+}

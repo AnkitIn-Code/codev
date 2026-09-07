@@ -259,3 +259,71 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
 }
+
+/* ── Responsive Media Queries ── */
+@media (max-width: 960px) {
+  .featured-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .featured-link:nth-child(2n) {
+    border-right: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .companies-breadcrumb {
+    padding: 12px 16px 0;
+  }
+  .companies-header {
+    padding: 16px 16px 20px;
+  }
+  .companies-header h1 {
+    font-size: 22px;
+  }
+  .companies-stats-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .companies-stat-divider {
+    display: none;
+  }
+  .companies-section {
+    padding: 20px 16px 0;
+  }
+  .companies-how-to {
+    padding: 20px 16px;
+    margin-top: 20px;
+  }
+  .popular-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .popular-card {
+    padding: 10px 12px;
+  }
+  .featured-grid {
+    grid-template-columns: 1fr;
+  }
+  .featured-link {
+    border-right: none !important;
+  }
+  .companies-search-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .companies-search-wrap {
+    width: 100%;
+  }
+  .company-list-row {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .popular-grid {
+    grid-template-columns: 1fr;
+  }
+  .companies-stat .stat-num {
+    font-size: 16px;
+  }
+}

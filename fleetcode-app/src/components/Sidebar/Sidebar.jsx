@@ -5,7 +5,7 @@ import { useSolvedProblems } from '../../hooks/useSolvedProblems';
 import { useProblems } from '../../hooks/useProblems';
 import './Sidebar.css';
 
-export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse }) {
+export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse, mobileOpen, onCloseMobile }) {
   const { theme, toggleTheme } = useTheme();
   const { solved } = useSolvedProblems();
   const { problems = [] } = useProblems();
@@ -19,7 +19,7 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse }) 
   const solvedPercent = totalProblems > 0 ? ((solvedCount / totalProblems) * 100).toFixed(1) : 0;
 
   return (
-    <aside className={`sb-container ${isCollapsed ? 'sb-collapsed' : ''}`}>
+    <aside className={`sb-container ${isCollapsed ? 'sb-collapsed' : ''} ${mobileOpen ? 'sb-mobile-open' : ''}`}>
       {/* Brand Header */}
       <div className="sb-header">
         <div className="sb-brand">
@@ -40,7 +40,7 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse }) 
               <path d="M2 12L12 17L22 12" stroke="url(#sbGrad2)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          {!isCollapsed && (
+          {(!isCollapsed || mobileOpen) && (
             <div className="sb-brand-text">
               <span className="sb-brand-title">Fleet<span className="sb-brand-highlight">Code</span></span>
               <span className="sb-brand-pill">v2.0</span>
@@ -48,20 +48,31 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse }) 
           )}
         </div>
 
-        <button
-          className="sb-collapse-toggle"
-          onClick={toggleCollapse}
-          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          aria-label="Toggle sidebar width"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            {isCollapsed ? (
-              <polyline points="9 18 15 12 9 6" />
-            ) : (
-              <polyline points="15 18 9 12 15 6" />
-            )}
-          </svg>
-        </button>
+        {mobileOpen ? (
+          <button
+            type="button"
+            className="sb-mobile-close-btn"
+            onClick={onCloseMobile}
+            aria-label="Close menu"
+          >
+            ✕
+          </button>
+        ) : (
+          <button
+            className="sb-collapse-toggle"
+            onClick={toggleCollapse}
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label="Toggle sidebar width"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              {isCollapsed ? (
+                <polyline points="9 18 15 12 9 6" />
+              ) : (
+                <polyline points="15 18 9 12 15 6" />
+              )}
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Navigation Groups */}
@@ -72,6 +83,7 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse }) 
           <NavLink
             to="/"
             end
+            onClick={onCloseMobile}
             className={({ isActive }) => `sb-item ${isActive ? 'sb-item--active' : ''}`}
             title="Dashboard"
           >
@@ -88,6 +100,7 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse }) 
 
           <NavLink
             to="/problems"
+            onClick={onCloseMobile}
             className={({ isActive }) => `sb-item ${isActive ? 'sb-item--active' : ''}`}
             title="Problems"
           >
@@ -107,6 +120,7 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse }) 
 
           <NavLink
             to="/sheets"
+            onClick={onCloseMobile}
             className={({ isActive }) => `sb-item ${isActive ? 'sb-item--active' : ''}`}
             title="DSA Sheets"
           >
@@ -131,6 +145,7 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse }) 
           {!isCollapsed && <div className="sb-group-label">EXPLORE & PREP</div>}
           <NavLink
             to="/topics"
+            onClick={onCloseMobile}
             className={({ isActive }) => `sb-item ${isActive ? 'sb-item--active' : ''}`}
             title="Topics"
           >
@@ -150,6 +165,7 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse }) 
 
           <NavLink
             to="/companies"
+            onClick={onCloseMobile}
             className={({ isActive }) => `sb-item ${isActive ? 'sb-item--active' : ''}`}
             title="Companies"
           >

@@ -93,3 +93,47 @@
   background: var(--bg-tertiary);
   border-bottom: 1px solid var(--border);
 }
+
+/* ── Mobile Responsiveness (< 640px) ── */
+@media (max-width: 640px) {
+  .section-header {
+    padding: 16px 16px;
+  }
+  .section-header h1 {
+    font-size: 22px;
+  }
+  .section-header p {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .problems-filters {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .filter-search-wrap {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  .filter-select {
+    flex: 1 1 calc(50% - 4px);
+  }
+
+  .problems-filters button[type="submit"] {
+    flex: 1 1 calc(50% - 4px);
+    text-align: center;
+    justify-content: center;
+  }
+
+  .problems-filters .btn-outline {
+    flex: 1 1 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .problems-result-count {
+    padding: 8px 16px;
+  }
+}

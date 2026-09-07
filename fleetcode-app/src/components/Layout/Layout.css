@@ -16,3 +16,116 @@
 .layout-collapsed .layout-main {
   margin-left: 72px;
 }
+
+/* Mobile top bar: hidden on desktop */
+.layout-mobile-bar {
+  display: none;
+}
+
+.layout-backdrop {
+  display: none;
+}
+
+/* ── Mobile & Tablet Media Query (< 860px) ── */
+@media (max-width: 860px) {
+  .layout-main {
+    margin-left: 0 !important;
+    padding-top: 56px; /* space for mobile bar */
+    width: 100%;
+    min-width: 0;
+  }
+
+  .layout-mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    padding: 0 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    z-index: 90;
+  }
+
+  .layout-mobile-toggle {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .layout-mobile-toggle:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+  }
+
+  .layout-mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .layout-mobile-logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(99, 102, 241, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .layout-mobile-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .layout-mobile-highlight {
+    color: var(--primary);
+  }
+
+  .layout-mobile-theme-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+
+  .layout-mobile-theme-btn:hover {
+    background: var(--bg-hover);
+  }
+
+  .layout-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 95;
+    animation: layoutFadeIn 0.15s ease-out;
+  }
+
+  @keyframes layoutFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
