@@ -95,18 +95,20 @@ export default function TopicDetail() {
 
   return (
     <div className="td-page">
-      {/* Breadcrumbs */}
-      <nav className="td-breadcrumb">
-        <Link to="/topics">Topics</Link>
-        <span className="td-crumb-sep">›</span>
+      {/* Back to Topics Button */}
+      <div className="td-back">
+        <Link to="/topics" className="td-back-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Back to Topics
+        </Link>
         {category && (
-          <>
-            <Link to="/topics">{category.title}</Link>
-            <span className="td-crumb-sep">›</span>
-          </>
+          <span className="td-back-category">
+            in <strong>{category.title}</strong>
+          </span>
         )}
-        <span className="td-crumb-current">{topicName}</span>
-      </nav>
+      </div>
 
       {/* Header with Title, Counts, Difficulty Pills and Search */}
       <div className="td-header">

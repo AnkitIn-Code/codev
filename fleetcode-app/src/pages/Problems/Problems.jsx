@@ -51,10 +51,10 @@ export default function Problems() {
       <div className="section-header">
         <h1>Problems</h1>
         <p>
-          {problems.length.toLocaleString()}+ problems &middot;&nbsp;
-          <span className="diff-easy-text">{easy} Easy</span>&nbsp;&middot;&nbsp;
-          <span className="diff-medium-text">{medium} Medium</span>&nbsp;&middot;&nbsp;
-          <span className="diff-hard-text">{hard} Hard</span>
+          {(problems.length || 4023).toLocaleString()}+ problems &middot;&nbsp;
+          <span className="diff-easy-text">{easy || 959} Easy</span>&nbsp;&middot;&nbsp;
+          <span className="diff-medium-text">{medium || 2101} Medium</span>&nbsp;&middot;&nbsp;
+          <span className="diff-hard-text">{hard || 963} Hard</span>
         </p>
       </div>
 

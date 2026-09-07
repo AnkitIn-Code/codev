@@ -13,7 +13,7 @@ export function useCompanies() {
       setLoading(false);
       return;
     }
-    fetch('/data/companies.json')
+    fetch('/data/companies.json?v=659&t=' + Date.now())
       .then(r => r.json())
       .then(data => {
         cachedCompanies = data;

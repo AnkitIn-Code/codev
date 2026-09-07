@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { TOPIC_CATEGORIES, topicToSlug } from '../../data/topicGroups';
 import { useProblems } from '../../hooks/useProblems';
 import { useSolvedProblems } from '../../hooks/useSolvedProblems';
@@ -12,7 +12,6 @@ export default function Topics() {
 
   // All categories open by default
   const [expanded, setExpanded] = useState(() => new Set(TOPIC_CATEGORIES.map(c => c.id)));
-  // Search filter
   const [search, setSearch] = useState('');
 
   const totalTopics = TOPIC_CATEGORIES.reduce((s, c) => s + c.subtopics.length, 0);
@@ -77,36 +76,27 @@ export default function Topics() {
 
   return (
     <div className="topics-page">
-      {/* Breadcrumb */}
-      <div className="topics-breadcrumb">
-        <Link to="/">FleetCode</Link>
-        <span className="sep">›</span>
-        <span>Topics</span>
-      </div>
-
-      {/* Header */}
-      <div className="topics-page-header">
-        <div className="topics-title-wrap">
-          <h1>
-            Topics <span className="topics-count-badge">({totalTopics})</span>
-          </h1>
+      {/* ── Page Header ── */}
+      <header className="topics-header">
+        <div className="topics-header-left">
+          <h1 className="topics-title">Topics</h1>
           <p className="topics-subtitle">
-            Master each topic systematically · Click <strong>Practice →</strong> on any topic to practice its questions
+            {totalTopics} topics grouped into 16 categories, ordered in recommended sequence of learning.
           </p>
         </div>
 
-        <div className="topics-toolbar">
-          <div className="topics-search-box">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="search-icon">
+        <div className="topics-header-actions">
+          <div className="topics-search-wrap">
+            <svg className="topics-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input
               type="text"
-              placeholder="Search topics or subtopics..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
               className="topics-search-input"
+              placeholder="Search topics..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
             />
             {search && (
               <button
@@ -120,61 +110,138 @@ export default function Topics() {
             )}
           </div>
 
-          <div className="topics-actions">
-            <button type="button" className="topics-btn-secondary" onClick={expandAll}>
+          <div className="topics-expand-buttons">
+            <button type="button" className="btn btn-outline topics-btn-ctrl" onClick={expandAll}>
               Expand All
             </button>
-            <button type="button" className="topics-btn-secondary" onClick={collapseAll}>
+            <button type="button" className="btn btn-outline topics-btn-ctrl" onClick={collapseAll}>
               Collapse All
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Topics Table Container */}
-      <div className="topics-table-wrapper">
-        <table className="topics-table">
-          <thead>
-            <tr>
-              <th className="th-topic">TOPIC</th>
-              <th className="th-problems">PROBLEMS</th>
-              <th className="th-difficulty">DIFFICULTY</th>
-              <th className="th-progress">PROGRESS</th>
-              <th className="th-action">ACTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredCategories.map((category, catIndex) => {
-              const isOpen = expanded.has(category.id);
-              const categoryTotal = category.subtopics.reduce((acc, s) => acc + s.count, 0);
-              const categorySolved = category.subtopics.reduce(
-                (acc, s) => acc + (topicSolvedMap[s.name] || 0),
-                0
-              );
-              const categoryPct = categoryTotal > 0 ? Math.round((categorySolved / categoryTotal) * 100) : 0;
+      {/* ── Categories List ── */}
+      <div className="topics-categories-container">
+        {filteredCategories.map((category, idx) => {
+          const isOpen = expanded.has(category.id);
+          const categoryTotal = category.subtopics.reduce((acc, s) => acc + s.count, 0);
+          const categorySolved = category.subtopics.reduce(
+            (acc, s) => acc + (topicSolvedMap[s.name] || 0),
+            0
+          );
+          const categoryPct = categoryTotal > 0 ? Math.round((categorySolved / categoryTotal) * 100) : 0;
 
-              return (
-                <CategoryBlock
-                  key={category.id}
-                  category={category}
-                  catIndex={catIndex}
-                  isOpen={isOpen}
-                  categoryTotal={categoryTotal}
-                  categorySolved={categorySolved}
-                  categoryPct={categoryPct}
-                  topicSolvedMap={topicSolvedMap}
-                  onToggle={() => toggleCategory(category.id)}
-                  onPractice={handlePractice}
-                />
-              );
-            })}
-          </tbody>
-        </table>
+          return (
+            <div key={category.id} className="topic-category-block">
+              {/* Category Header with Simple Numbering */}
+              <div
+                className="category-heading-row"
+                onClick={() => toggleCategory(category.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleCategory(category.id);
+                  }
+                }}
+              >
+                <div className="chr-left">
+                  <h2 className="category-title">
+                    <span className="category-num">{idx + 1}.</span> {category.title}
+                  </h2>
+                  <span className="category-problems-pill">
+                    {categoryTotal.toLocaleString()} problems
+                  </span>
+                </div>
+
+                <div className="chr-right">
+                  {categorySolved > 0 && (
+                    <span className="category-solved-count">
+                      {categorySolved} / {categoryTotal} ({categoryPct}%)
+                    </span>
+                  )}
+                  <span className="category-toggle-indicator">
+                    {isOpen ? '−' : '+'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Tab-Indented Subtopics Table */}
+              {isOpen && (
+                <div className="subtopics-tab-wrapper">
+                  <table className="subtopics-table">
+                    <thead>
+                      <tr>
+                        <th className="th-subtopic">SUBTOPIC</th>
+                        <th className="th-problems">PROBLEMS</th>
+                        <th className="th-difficulty">DIFFICULTY</th>
+                        <th className="th-progress">PROGRESS</th>
+                        <th className="th-action">ACTION</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {category.subtopics.map(sub => {
+                        const solved = topicSolvedMap[sub.name] || 0;
+                        const pct = sub.count > 0 ? Math.round((solved / sub.count) * 100) : 0;
+
+                        return (
+                          <tr
+                            key={sub.name}
+                            className="subtopic-table-row"
+                            onClick={() => handlePractice(sub.name)}
+                          >
+                            <td className="td-subtopic">
+                              <span className="subtopic-name-bold">{sub.name}</span>
+                            </td>
+                            <td className="td-problems">
+                              <span className="subtopic-prob-number">{sub.count.toLocaleString()}</span>
+                            </td>
+                            <td className="td-difficulty">
+                              <span className={`diff-tag diff-${(sub.difficulty || 'medium').toLowerCase().replace(/[^a-z]/g, '-')}`}>
+                                {sub.difficulty}
+                              </span>
+                            </td>
+                            <td className="td-progress">
+                              <div className="subtopic-prog-wrap">
+                                <div className="subtopic-prog-track">
+                                  <div
+                                    className="subtopic-prog-fill"
+                                    style={{ width: `${Math.min(pct, 100)}%` }}
+                                  />
+                                </div>
+                                <span className="subtopic-prog-text">{pct}%</span>
+                              </div>
+                            </td>
+                            <td className="td-action">
+                              <button
+                                type="button"
+                                className="subtopic-practice-button"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  handlePractice(sub.name);
+                                }}
+                              >
+                                Practice →
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {filteredCategories.length === 0 && (
           <div className="topics-empty">
-            <span>🔍</span>
-            <p>No topics found matching "{search}"</p>
+            <span className="topics-empty-icon">🔍</span>
+            <h3>No topics found</h3>
+            <p>We couldn't find any topics matching "{search}".</p>
             <button type="button" className="btn btn-outline" onClick={() => setSearch('')}>
               Clear Search
             </button>
@@ -182,109 +249,5 @@ export default function Topics() {
         )}
       </div>
     </div>
-  );
-}
-
-function CategoryBlock({
-  category,
-  catIndex,
-  isOpen,
-  categoryTotal,
-  categorySolved,
-  categoryPct,
-  topicSolvedMap,
-  onToggle,
-  onPractice,
-}) {
-  return (
-    <>
-      {/* Category Parent Header Row */}
-      <tr className={`category-header-row ${isOpen ? 'category-header-row--open' : ''}`} onClick={onToggle}>
-        <td colSpan={5} className="category-header-cell">
-          <div className="cat-row-flex">
-            <div className="cat-row-left">
-              <span className="cat-num">{catIndex + 1}.</span>
-              <span className="cat-icon" style={{ color: category.color }}>{category.icon}</span>
-              <span className="cat-title">{category.title}</span>
-              <span className="cat-badge">{category.subtopics.length} topics</span>
-              <span className="cat-prob-count">{categoryTotal.toLocaleString()} problems</span>
-            </div>
-
-            <div className="cat-row-right">
-              {categorySolved > 0 && (
-                <div className="cat-solved-tag">
-                  {categorySolved} / {categoryTotal} ({categoryPct}%)
-                </div>
-              )}
-              <div className={`cat-chevron-icon ${isOpen ? 'cat-chevron-icon--open' : ''}`}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </td>
-      </tr>
-
-      {/* Subtopic Rows with Tab-Spaced Indentation */}
-      {isOpen &&
-        category.subtopics.map((sub, idx) => {
-          const isLast = idx === category.subtopics.length - 1;
-          const solved = topicSolvedMap[sub.name] || 0;
-          const pct = sub.count > 0 ? Math.round((solved / sub.count) * 100) : 0;
-
-          return (
-            <tr
-              key={sub.name}
-              className={`subtopic-row ${isLast ? 'subtopic-row--last' : ''}`}
-              onClick={() => onPractice(sub.name)}
-            >
-              {/* TOPIC Cell with Tab Space Indentation */}
-              <td className="td-topic">
-                <div className="subtopic-tab-indent">
-                  <span className="tab-branch-symbol">{isLast ? '└──' : '├──'}</span>
-                  <span className="subtopic-label">{sub.name}</span>
-                </div>
-              </td>
-
-              {/* PROBLEMS Cell */}
-              <td className="td-problems">
-                <strong>{sub.count.toLocaleString()}</strong>
-              </td>
-
-              {/* DIFFICULTY Cell */}
-              <td className="td-difficulty">
-                <span className={`diff-tag diff-${sub.difficulty.toLowerCase().replace(/[^a-z]/g, '-')}`}>
-                  {sub.difficulty}
-                </span>
-              </td>
-
-              {/* PROGRESS Cell */}
-              <td className="td-progress">
-                <div className="prog-container">
-                  <div className="prog-bar-track">
-                    <div className="prog-bar-fill" style={{ width: `${Math.min(pct, 100)}%` }} />
-                  </div>
-                  <span className="prog-text">{pct}%</span>
-                </div>
-              </td>
-
-              {/* ACTION Cell */}
-              <td className="td-action">
-                <button
-                  type="button"
-                  className="practice-link-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onPractice(sub.name);
-                  }}
-                >
-                  Practice →
-                </button>
-              </td>
-            </tr>
-          );
-        })}
-    </>
   );
 }

@@ -15,17 +15,64 @@ const PAGE_SIZE = 50;
  * @param {boolean} loading      - show loading state
  * @param {boolean} showStatus   - show status (solved) column
  */
-export default function ProblemTable({ problems = [], loading = false, showStatus = true }) {
+export default function ProblemTable({
+  problems = [],
+  loading = false,
+  showStatus = true,
+  showFrequency = false,
+}) {
   const [page, setPage] = useState(1);
   const [popup, setPopup] = useState(null); // { title, companies }
   const [topicPopup, setTopicPopup] = useState(null); // { title, topics }
+  const [sortKey, setSortKey] = useState(null);
+  const [sortDir, setSortDir] = useState('desc');
   const { isSolved, toggleSolved } = useSolvedProblems();
 
-  const totalPages = Math.ceil(problems.length / PAGE_SIZE);
+  function handleSort(key) {
+    if (sortKey === key) {
+      setSortDir(d => (d === 'desc' ? 'asc' : 'desc'));
+    } else {
+      setSortKey(key);
+      setSortDir(key === 'title' ? 'asc' : 'desc');
+    }
+    setPage(1);
+  }
+
+  const sortedProblems = useMemo(() => {
+    if (!sortKey) return problems;
+    const sorted = [...problems];
+    sorted.sort((a, b) => {
+      if (sortKey === 'title') {
+        const valA = (a.Title || a.title || '').toLowerCase();
+        const valB = (b.Title || b.title || '').toLowerCase();
+        return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      }
+      if (sortKey === 'acceptance') {
+        const valA = a.AcceptanceRate ?? a.acceptance_rate ?? -1;
+        const valB = b.AcceptanceRate ?? b.acceptance_rate ?? -1;
+        return sortDir === 'asc' ? valA - valB : valB - valA;
+      }
+      if (sortKey === 'frequency') {
+        const valA = a.Frequency != null ? parseFloat(a.Frequency) : -1;
+        const valB = b.Frequency != null ? parseFloat(b.Frequency) : -1;
+        return sortDir === 'asc' ? valA - valB : valB - valA;
+      }
+      if (sortKey === 'difficulty') {
+        const order = { easy: 1, medium: 2, hard: 3 };
+        const valA = order[(a.Difficulty || '').toLowerCase()] || 0;
+        const valB = order[(b.Difficulty || '').toLowerCase()] || 0;
+        return sortDir === 'asc' ? valA - valB : valB - valA;
+      }
+      return 0;
+    });
+    return sorted;
+  }, [problems, sortKey, sortDir]);
+
+  const totalPages = Math.ceil(sortedProblems.length / PAGE_SIZE);
   const paginated = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
-    return problems.slice(start, start + PAGE_SIZE);
-  }, [problems, page]);
+    return sortedProblems.slice(start, start + PAGE_SIZE);
+  }, [sortedProblems, page]);
 
   function openPopup(e, problem) {
     e.stopPropagation();
@@ -63,11 +110,21 @@ export default function ProblemTable({ problems = [], loading = false, showStatu
           <thead>
             <tr>
               {showStatus && <th className="col-status">STATUS</th>}
-              <th className="col-title">TITLE</th>
-              <th className="col-acceptance">ACCEPTANCE</th>
-              <th className="col-frequency">FREQUENCY</th>
+              <th className="col-title sortable-th" onClick={() => handleSort('title')} title="Sort by title">
+                TITLE {sortKey === 'title' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="col-acceptance sortable-th" onClick={() => handleSort('acceptance')} title="Sort by acceptance rate">
+                ACCEPTANCE {sortKey === 'acceptance' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              {showFrequency && (
+                <th className="col-frequency sortable-th" onClick={() => handleSort('frequency')} title="Sort by frequency">
+                  FREQUENCY {sortKey === 'frequency' && (sortDir === 'asc' ? '↑' : '↓')}
+                </th>
+              )}
               <th className="col-practice">PRACTICE</th>
-              <th className="col-difficulty">DIFFICULTY</th>
+              <th className="col-difficulty sortable-th" onClick={() => handleSort('difficulty')} title="Sort by difficulty">
+                DIFFICULTY {sortKey === 'difficulty' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
               <th className="col-companies">COMPANIES</th>
               <th className="col-topics">TOPICS</th>
             </tr>
@@ -78,6 +135,7 @@ export default function ProblemTable({ problems = [], loading = false, showStatu
                 key={problem['#'] || problem.id || problem.Slug}
                 problem={problem}
                 showStatus={showStatus}
+                showFrequency={showFrequency}
                 solved={isSolved(problem)}
                 onToggleSolved={() => toggleSolved(problem.Slug || problem['#'])}
                 onCompanyClick={(e) => openPopup(e, problem)}
@@ -103,7 +161,7 @@ export default function ProblemTable({ problems = [], loading = false, showStatu
   );
 }
 
-function ProblemRow({ problem, showStatus, solved, onToggleSolved, onCompanyClick, onTopicExtraClick }) {
+function ProblemRow({ problem, showStatus, showFrequency, solved, onToggleSolved, onCompanyClick, onTopicExtraClick }) {
   const num = problem['#'] || problem.id;
   const title = problem.Title || problem.title;
   const slug = problem.Slug || problem.slug || problem.title_slug;
@@ -160,20 +218,22 @@ function ProblemRow({ problem, showStatus, solved, onToggleSolved, onCompanyClic
           {acceptanceRate != null ? `${Number(acceptanceRate).toFixed(1)}%` : '—'}
         </span>
       </td>
-      <td className="col-frequency">
-        <div className="freq-bar-wrap" title={`Frequency: ${freq.toFixed(1)}%`}>
-          <div className="freq-bar-track">
-            <div
-              className="freq-bar-fill"
-              style={{
-                width: `${Math.min(Math.max(freq, 6), 100)}%`,
-                background: freq >= 75 ? '#ef4444' : freq >= 45 ? '#f59e0b' : '#3b82f6'
-              }}
-            />
+      {showFrequency && (
+        <td className="col-frequency">
+          <div className="freq-bar-wrap" title={`Frequency: ${freq.toFixed(1)}%`}>
+            <div className="freq-bar-track">
+              <div
+                className="freq-bar-fill"
+                style={{
+                  width: `${Math.min(Math.max(freq, 6), 100)}%`,
+                  background: freq >= 75 ? '#ef4444' : freq >= 45 ? '#f59e0b' : '#3b82f6'
+                }}
+              />
+            </div>
+            <span className="freq-rate-text">{freq.toFixed(0)}%</span>
           </div>
-          <span className="freq-rate-text">{freq.toFixed(0)}%</span>
-        </div>
-      </td>
+        </td>
+      )}
       <td className="col-practice">
         <a
           href={leetcodeUrl(slug)}

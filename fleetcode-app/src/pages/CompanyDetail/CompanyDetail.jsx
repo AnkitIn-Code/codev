@@ -26,12 +26,43 @@ export default function CompanyDetail() {
 
   const companyName = company?.name || slugToDisplayName(slug);
 
-  // Company problems: only problems where this company is listed
+  // Company problems: only problems where this company is listed, enriched with company-specific frequency
   const companyProblems = useMemo(() => {
     if (!company) return [];
-    return problems.filter(p =>
-      (p.CompanyList || []).some(c => c.toLowerCase() === companyName.toLowerCase())
+
+    // Map of company-specific problem entries from companies.json (with exact frequency & acceptance)
+    const compProblemMap = new Map();
+    if (company.problems && company.problems.length > 0) {
+      for (const cp of company.problems) {
+        compProblemMap.set(cp['#'] || cp.id, cp);
+      }
+    }
+
+    const matched = problems.filter(p =>
+      (p.CompanyList || []).some(c => c.toLowerCase() === companyName.toLowerCase()) ||
+      compProblemMap.has(p['#'])
     );
+
+    const enriched = matched.map(p => {
+      const cp = compProblemMap.get(p['#']);
+      if (cp && cp.Frequency != null) {
+        return {
+          ...p,
+          Frequency: cp.Frequency,
+          AcceptanceRate: cp.AcceptanceRate ?? p.AcceptanceRate,
+        };
+      }
+      return p;
+    });
+
+    // Default sort by frequency descending so highest frequency interview questions appear first
+    enriched.sort((a, b) => {
+      const freqA = a.Frequency != null ? parseFloat(a.Frequency) : -1;
+      const freqB = b.Frequency != null ? parseFloat(b.Frequency) : -1;
+      return freqB - freqA;
+    });
+
+    return enriched;
   }, [problems, company, companyName]);
 
   // Filter
@@ -118,7 +149,7 @@ export default function CompanyDetail() {
           <Link to="/companies" className="btn btn-primary" style={{ marginTop: 16 }}>← Back to Companies</Link>
         </div>
       ) : (
-        <ProblemTable problems={filtered} loading={false} />
+        <ProblemTable problems={filtered} loading={false} showFrequency={true} />
       )}
     </div>
   );
