@@ -1,0 +1,445 @@
+/* ── Topics Page Root ── */
+.topics-page {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 28px 36px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 100vh;
+}
+
+/* ── Breadcrumb ── */
+.topics-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.topics-breadcrumb a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.topics-breadcrumb a:hover {
+  color: var(--primary);
+}
+.topics-breadcrumb .sep {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ── Page Header & Toolbar ── */
+.topics-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+}
+
+.topics-title-wrap h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topics-count-badge {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.topics-subtitle {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.topics-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.topics-search-box {
+  position: relative;
+  width: 280px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.topics-search-input {
+  width: 100%;
+  padding: 8px 32px 8px 32px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text);
+  font-family: inherit;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.topics-search-input:focus {
+  background: var(--bg);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.topics-search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+
+.topics-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topics-btn-secondary {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.topics-btn-secondary:hover {
+  background: var(--bg-tertiary);
+  color: var(--text);
+}
+
+/* ── Table Container ── */
+.topics-table-wrapper {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.topics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  text-align: left;
+}
+
+/* ── Table Header ── */
+.topics-table thead tr {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.topics-table th {
+  padding: 11px 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.th-topic      { width: 34%; }
+.th-problems   { width: 14%; }
+.th-difficulty { width: 16%; }
+.th-progress   { width: 22%; }
+.th-action     { width: 14%; text-align: right; }
+
+/* ── Category Parent Header Row ── */
+.category-header-row {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.12s ease;
+  user-select: none;
+}
+
+.category-header-row:first-child {
+  border-top: none;
+}
+
+.category-header-row:hover {
+  background: var(--bg-tertiary);
+}
+
+.category-header-row--open {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.category-header-cell {
+  padding: 13px 20px;
+}
+
+.cat-row-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cat-row-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cat-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 22px;
+}
+
+.cat-icon {
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.cat-badge {
+  padding: 2px 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.cat-prob-count {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.cat-row-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cat-solved-tag {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #16a34a;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.cat-chevron-icon {
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-chevron-icon--open {
+  transform: rotate(180deg);
+  color: var(--primary);
+}
+
+/* ── Subtopic Row & Tab Indentation ── */
+.subtopic-row {
+  border-bottom: 1px solid var(--border-light, var(--border));
+  background: var(--bg);
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.subtopic-row:hover {
+  background: var(--bg-hover, #f8f9fa);
+}
+
+.subtopic-row td {
+  padding: 12px 20px;
+  vertical-align: middle;
+}
+
+/* ── THE TAB SPACE INDENTATION ── */
+.subtopic-tab-indent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Visual Tab Space Indent: 28px padding from the left boundary */
+  padding-left: 28px;
+}
+
+.tab-branch-symbol {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  user-select: none;
+  letter-spacing: -1px;
+}
+
+.subtopic-label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
+  transition: color 0.12s ease;
+}
+
+.subtopic-row:hover .subtopic-label {
+  color: var(--primary);
+}
+
+.subtopic-row:hover .tab-branch-symbol {
+  color: var(--primary);
+}
+
+/* Problems Count */
+.td-problems strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Difficulty Badges */
+.diff-tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.diff-easy {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+.diff-medium {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+.diff-med-hard, .diff-med--hard {
+  background: rgba(249, 115, 22, 0.12);
+  color: #ea580c;
+}
+.diff-hard {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+/* Progress bar */
+.prog-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 170px;
+}
+
+.prog-bar-track {
+  flex: 1;
+  height: 5px;
+  background: var(--bg-tertiary, #e2e8f0);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.prog-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.prog-text {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* Action Button */
+.td-action {
+  text-align: right;
+}
+
+.practice-link-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--primary);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 13px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.practice-link-btn:hover {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+/* Empty State */
+.topics-empty {
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--text-muted);
+}
+.topics-empty span {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .topics-page {
+    padding: 20px 16px 48px;
+  }
+  .subtopic-tab-indent {
+    padding-left: 14px;
+  }
+  .th-progress, .td-progress {
+    display: none;
+  }
+}

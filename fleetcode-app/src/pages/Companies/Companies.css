@@ -1,0 +1,261 @@
+.companies-page {
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* Breadcrumb */
+.companies-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 28px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.companies-breadcrumb a { color: var(--primary); }
+.companies-breadcrumb a:hover { text-decoration: underline; }
+.companies-breadcrumb .sep { color: var(--text-muted); }
+
+/* Header */
+.companies-header {
+  padding: 20px 28px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.companies-header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.companies-header p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.companies-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.companies-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding-right: 24px;
+}
+.companies-stat-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+  margin: 0 24px 0 0;
+}
+.companies-stat .stat-num { font-size: 18px; font-weight: 800; color: var(--text); }
+.companies-stat .stat-label { font-size: 12px; color: var(--text-secondary); }
+
+/* Sections */
+.companies-section {
+  padding: 28px 28px 0;
+}
+.companies-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+/* Popular grid */
+.popular-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.popular-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.popular-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.popular-name { font-size: 13.5px; font-weight: 600; color: var(--text); }
+.popular-count { font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+
+/* How to prepare */
+.companies-how-to {
+  padding: 28px 28px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-top: 28px;
+}
+.companies-how-to h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.companies-how-to p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+.companies-how-to p a { color: var(--primary); }
+.companies-how-to p:last-child { margin-bottom: 0; }
+
+/* Featured grid (3 cols) */
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.featured-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  transition: background 0.12s;
+}
+.featured-link:nth-child(3n) { border-right: none; }
+.featured-link:nth-last-child(-n+3) { border-bottom: none; }
+.featured-link:hover { background: var(--bg-hover); }
+.featured-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.featured-desc { font-size: 11.5px; color: var(--text-secondary); }
+.featured-link svg { color: var(--text-muted); flex-shrink: 0; }
+
+/* Search bar */
+.companies-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.companies-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+.companies-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 30px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  background: var(--bg-secondary);
+  outline: none;
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+.companies-search-input:focus { border-color: var(--primary); }
+.companies-search-input::placeholder { color: var(--text-muted); }
+
+.companies-list-header {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+/* List */
+.companies-list {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.companies-list-cols {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--bg-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+.company-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text);
+  transition: background 0.1s;
+}
+.company-list-row:last-child { border-bottom: none; }
+.company-list-row:hover { background: var(--bg-hover); }
+.company-list-left { display: flex; align-items: center; gap: 12px; }
+.company-list-name { font-size: 13.5px; font-weight: 500; color: var(--text); }
+.company-list-right { display: flex; align-items: center; gap: 8px; }
+.company-list-arrow { color: var(--text-muted); }
+
+/* Header extra */
+.companies-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.companies-page-counter {
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+}
+
+/* Clear button */
+.companies-search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 4px;
+}
+.companies-search-clear:hover {
+  color: var(--text);
+}
+
+/* Empty state */
+.companies-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.companies-empty span {
+  font-size: 30px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Pagination container */
+.companies-pagination {
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
