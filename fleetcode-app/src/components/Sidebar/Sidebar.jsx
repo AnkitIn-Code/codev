@@ -186,6 +186,27 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse, mo
               </>
             )}
           </NavLink>
+
+          <NavLink
+            to="/practice"
+            onClick={onCloseMobile}
+            className={({ isActive }) => `sb-item ${isActive ? 'sb-item--active' : ''}`}
+            title="Pattern Practice"
+          >
+            <span className="sb-item-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
+            </span>
+            {!isCollapsed && (
+              <>
+                <span className="sb-item-label">Practice</span>
+                <span className="sb-badge sb-badge-flame">🧠 New</span>
+              </>
+            )}
+          </NavLink>
         </div>
 
         {/* Live Progress Card */}

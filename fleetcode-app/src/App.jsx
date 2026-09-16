@@ -8,6 +8,8 @@ import Companies     from './pages/Companies/Companies';
 import CompanyDetail from './pages/CompanyDetail/CompanyDetail';
 import Sheets        from './pages/Sheets/Sheets';
 import SheetDetail   from './pages/SheetDetail/SheetDetail';
+import Practice      from './pages/Practice/Practice';
+import MockOA        from './pages/Practice/MockOA';
 
 export default function App() {
   return (
@@ -22,6 +24,8 @@ export default function App() {
           <Route path="/companies/:slug"      element={<CompanyDetail />} />
           <Route path="/sheets"               element={<Sheets />} />
           <Route path="/sheets/:id"           element={<SheetDetail />} />
+          <Route path="/practice"             element={<Practice />} />
+          <Route path="/practice/mock"        element={<MockOA />} />
           {/* Catch-all redirect */}
           <Route path="*"                     element={<Navigate to="/" replace />} />
         </Routes>
