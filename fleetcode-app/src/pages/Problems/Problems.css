@@ -1,5 +1,13 @@
 .problems-page { min-height: 100vh; }
 
+.problems-subheader {
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
 .diff-easy-text   { color: var(--easy);   font-weight: 600; }
 .diff-medium-text { color: var(--medium); font-weight: 600; }
 .diff-hard-text   { color: var(--hard);   font-weight: 600; }

@@ -55,9 +55,10 @@ export const binarySearch = {
         },
         {
           id: 'bs-count-occurrences',
-          title: 'Count Occurrences',
-          slug: 'find-first-and-last-position-of-element-in-sorted-array',
-          difficulty: 'Medium',
+          title: 'Count Occurrences in Sorted Array',
+          slug: 'number-of-occurrence',
+          url: 'https://www.geeksforgeeks.org/problems/number-of-occurrence2259/1',
+          difficulty: 'Easy',
           patternId: 'binary-search-core',
           hints: {
             recognition: 'Total count of duplicate element in sorted array.',
@@ -69,6 +70,7 @@ export const binarySearch = {
           id: 'bs-infinite-sorted-array',
           title: 'Search in Infinite Sorted Array',
           slug: 'search-in-a-sorted-array-of-unknown-size',
+          url: 'https://www.geeksforgeeks.org/find-position-element-sorted-array-infinite-numbers/',
           difficulty: 'Medium',
           patternId: 'binary-search-core',
           hints: {

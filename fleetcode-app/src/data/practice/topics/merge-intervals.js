@@ -55,7 +55,7 @@ export const mergeIntervals = {
         },
         {
           id: 'mi-overlapping-intervals',
-          title: 'Overlapping Intervals',
+          title: 'Non-overlapping Intervals',
           slug: 'non-overlapping-intervals',
           difficulty: 'Medium',
           patternId: 'intervals-core',
@@ -67,8 +67,9 @@ export const mergeIntervals = {
         },
         {
           id: 'mi-minimum-meeting-rooms',
-          title: 'Minimum Meeting Rooms',
+          title: 'Minimum Meeting Rooms (Meeting Rooms II)',
           slug: 'meeting-rooms-ii',
+          url: 'https://www.geeksforgeeks.org/problems/attend-all-meetings-ii/1',
           difficulty: 'Medium',
           patternId: 'intervals-core',
           hints: {
@@ -79,20 +80,21 @@ export const mergeIntervals = {
         },
         {
           id: 'mi-maximum-cpu-load',
-          title: 'Maximum CPU Load',
-          slug: 'meeting-rooms-ii',
-          difficulty: 'Hard',
+          title: 'Maximum CPU Load (Car Pooling)',
+          slug: 'car-pooling',
+          difficulty: 'Medium',
           patternId: 'intervals-core',
           hints: {
-            recognition: 'Jobs have [start, end, cpu_load]. Find peak combined load at any point in time.',
-            structure: 'Line sweep / priority queue ordered by end time. Add load when job starts, subtract load when job ends.',
-            skeleton: 'const events = [];\nfor (const [s, e, load] of jobs) {\n  events.push([s, load]);\n  events.push([e, -load]);\n}\nevents.sort((a, b) => a[0] === b[0] ? a[1] - b[1] : a[0] - b[0]);\nlet maxLoad = 0, curLoad = 0;\nfor (const [, load] of events) {\n  curLoad += load;\n  maxLoad = Math.max(maxLoad, curLoad);\n}\nreturn maxLoad;',
+            recognition: 'Trips/jobs have [load, start, end]. Find peak combined load at any point in time.',
+            structure: 'Line sweep / difference array ordered by timestamp. Add load when job starts, subtract load when job ends.',
+            skeleton: 'const events = [];\nfor (const [load, s, e] of trips) {\n  events.push([s, load]);\n  events.push([e, -load]);\n}\nevents.sort((a, b) => a[0] === b[0] ? a[1] - b[1] : a[0] - b[0]);\nlet maxLoad = 0, curLoad = 0;\nfor (const [, load] of events) {\n  curLoad += load;\n  maxLoad = Math.max(maxLoad, curLoad);\n}\nreturn maxLoad;',
           },
         },
         {
           id: 'mi-employee-free-time',
           title: 'Employee Free Time',
           slug: 'employee-free-time',
+          url: 'https://www.lintcode.com/problem/850/',
           difficulty: 'Hard',
           patternId: 'intervals-core',
           hints: {

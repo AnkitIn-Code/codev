@@ -31,13 +31,14 @@ export const twoPointers = {
         },
         {
           id: 'tp-rearrange-01',
-          title: 'Rearrange 0 and 1',
-          slug: 'sort-colors',
-          difficulty: 'Medium',
+          title: 'Rearrange 0 and 1 (Segregate 0s and 1s)',
+          slug: 'segregate-0s-and-1s',
+          url: 'https://www.geeksforgeeks.org/problems/segregate-0s-and-1s5106/1',
+          difficulty: 'Easy',
           patternId: 'two-pointers-core',
           hints: {
-            recognition: 'Array with only 0s and 1s (or 0, 1, 2) that must be partitioned in-place.',
-            structure: 'Two pointers left and right. Swap 0 to left and 1 (or 2) to right in one pass.',
+            recognition: 'Array with only 0s and 1s that must be partitioned in-place.',
+            structure: 'Two pointers left and right. Swap 0 to left and 1 to right in one pass.',
             skeleton: 'let left = 0, right = nums.length - 1;\nwhile (left < right) {\n  while (left < right && nums[left] === 0) left++;\n  while (left < right && nums[right] === 1) right--;\n  if (left < right) {\n    [nums[left], nums[right]] = [nums[right], nums[left]];\n    left++; right--;\n  }\n}',
           },
         },
@@ -93,6 +94,7 @@ export const twoPointers = {
           id: 'tp-triplets-smaller-sum',
           title: 'Triplets with Smaller Sum',
           slug: '3sum-smaller',
+          url: 'https://www.geeksforgeeks.org/problems/count-triplets-with-sum-smaller-than-x5549/1',
           difficulty: 'Medium',
           patternId: 'two-pointers-core',
           hints: {

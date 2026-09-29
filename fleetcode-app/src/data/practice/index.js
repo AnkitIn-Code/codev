@@ -1,7 +1,15 @@
 /**
  * @file index.js
- * Aggregates all 20 curated practice topics into a single ordered array.
- * Import this wherever you need the full topic/pattern/question tree.
+ * Aggregates all curated practice topics into a single ordered array.
+ *
+ * Topics 1-13  : Core data-structure / algorithm patterns
+ * Topic  14    : Dynamic Programming (unified — 8 named patterns)
+ * Topics 15-20 : NEW topics (Greedy, Trie, Union-Find, Bit Manipulation,
+ *                Monotonic Stack, Sorting, Segment Tree)
+ *
+ * NOTE: The old separate DP files (dp-fundamentals, linear-dp, grid-dp,
+ *       knapsack-pattern, string-dp, advanced-dp, bonus-advanced-dp) are
+ *       replaced by the unified `dynamic-programming` topic.
  */
 
 import { twoPointers }           from './topics/two-pointers.js';
@@ -17,39 +25,43 @@ import { heapTopic }             from './topics/heap.js';
 import { recursionBacktracking } from './topics/recursion-backtracking.js';
 import { treesTopic }            from './topics/trees.js';
 import { graphsTopic }           from './topics/graphs.js';
-import { dpFundamentals }        from './topics/dp-fundamentals.js';
-import { linearDP }              from './topics/linear-dp.js';
-import { gridDP }                from './topics/grid-dp.js';
-import { knapsackPattern }       from './topics/knapsack-pattern.js';
-import { stringDP }              from './topics/string-dp.js';
-import { advancedDP }            from './topics/advanced-dp.js';
-import { bonusAdvancedDP }       from './topics/bonus-advanced-dp.js';
+// Unified DP (replaces 7 old DP topic files)
+import { dynamicProgramming }    from './topics/dynamic-programming.js';
+// New topics
+import { greedyAlgorithms }      from './topics/greedy.js';
+import { trieTopic }             from './topics/trie.js';
+import { unionFindTopic }        from './topics/union-find.js';
+import { bitManipulation }       from './topics/bit-manipulation.js';
+import { monotonicStackTopic }   from './topics/monotonic-stack.js';
+import { sortingTopic }          from './topics/sorting.js';
+import { segmentTreeTopic }      from './topics/segment-tree.js';
 
 /**
- * All 20 practice topics, ordered by their `order` field.
+ * All practice topics, ordered by their `order` field.
  * @type {import('./types').Topic[]}
  */
 export const ALL_TOPICS = [
-  twoPointers,
-  fastSlowPointers,
-  slidingWindow,
-  kadanePattern,
-  prefixSum,
-  mergeIntervals,
-  linkedListReversal,
-  stackTopic,
-  binarySearch,
-  heapTopic,
-  recursionBacktracking,
-  treesTopic,
-  graphsTopic,
-  dpFundamentals,
-  linearDP,
-  gridDP,
-  knapsackPattern,
-  stringDP,
-  advancedDP,
-  bonusAdvancedDP,
+  twoPointers,           // 1
+  fastSlowPointers,      // 2
+  slidingWindow,         // 3
+  kadanePattern,         // 4
+  prefixSum,             // 5
+  mergeIntervals,        // 6
+  linkedListReversal,    // 7
+  stackTopic,            // 8
+  binarySearch,          // 9
+  heapTopic,             // 10
+  recursionBacktracking, // 11
+  treesTopic,            // 12
+  graphsTopic,           // 13
+  dynamicProgramming,    // 14  ← unified DP
+  greedyAlgorithms,      // 21 → sorted to 15
+  trieTopic,             // 22 → sorted to 16
+  unionFindTopic,        // 23 → sorted to 17
+  bitManipulation,       // 24 → sorted to 18
+  monotonicStackTopic,   // 25 → sorted to 19
+  sortingTopic,          // 26 → sorted to 20
+  segmentTreeTopic,      // 27 → sorted to 21
 ].sort((a, b) => a.order - b.order);
 
 /**

@@ -47,9 +47,8 @@ export default function Problems() {
 
   return (
     <div className="problems-page">
-      {/* Header */}
-      <div className="section-header">
-        <h1>Problems</h1>
+      {/* Subheader strip */}
+      <div className="problems-subheader">
         <p>
           {(problems.length || 4023).toLocaleString()}+ problems &middot;&nbsp;
           <span className="diff-easy-text">{easy || 959} Easy</span>&nbsp;&middot;&nbsp;

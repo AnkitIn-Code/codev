@@ -1,41 +1,120 @@
-.layout {
+/* ══════════════════════════════════════════════
+   LAYOUT — App Shell
+   ══════════════════════════════════════════════ */
+
+.lyt {
   display: flex;
   min-height: 100vh;
   background: var(--bg);
 }
 
-.layout-main {
+/* ── Main content area ─────────────────────── */
+.lyt-main {
   margin-left: 240px;
   flex: 1;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
+}
+.lyt--collapsed .lyt-main { margin-left: 68px; }
+
+/* ── Top Header Bar ────────────────────────── */
+.lyt-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 60px;
+  border-bottom: 1px solid var(--border);
   background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+.lyt-topbar-left {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.lyt-page-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.lyt-page-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lyt-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.lyt-topbar-streak {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f97316;
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.15);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.lyt-topbar-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Page Content Wrapper ──────────────────── */
+.lyt-content {
+  flex: 1;
+  min-height: 0;
   overflow-x: hidden;
-  transition: margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.layout-collapsed .layout-main {
-  margin-left: 72px;
-}
-
-/* Mobile top bar: hidden on desktop */
-.layout-mobile-bar {
+/* ── Mobile Top Bar (≤ 860px only) ─────────── */
+.lyt-mobile-bar {
   display: none;
 }
+.lyt-backdrop { display: none; }
 
-.layout-backdrop {
-  display: none;
-}
-
-/* ── Mobile & Tablet Media Query (< 860px) ── */
 @media (max-width: 860px) {
-  .layout-main {
+  .lyt-main {
     margin-left: 0 !important;
-    padding-top: 56px; /* space for mobile bar */
-    width: 100%;
-    min-width: 0;
+    padding-top: 52px;
   }
 
-  .layout-mobile-bar {
+  .lyt-topbar { display: none; }
+
+  .lyt-mobile-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -43,89 +122,66 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 56px;
-    padding: 0 16px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
+    height: 52px;
+    padding: 0 14px;
+    background: #0d111c;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     z-index: 90;
   }
 
-  .layout-mobile-toggle {
-    width: 36px;
-    height: 36px;
+  .lyt-ham {
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    background: var(--bg-secondary);
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .layout-mobile-toggle:hover {
-    background: var(--bg-hover);
-    border-color: var(--border-hover);
-  }
-
-  .layout-mobile-brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-  }
-
-  .layout-mobile-logo {
-    width: 28px;
-    height: 28px;
     border-radius: 8px;
-    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .lyt-ham:hover {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+  }
+
+  .lyt-mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .lyt-mobile-brand strong { color: #818cf8; }
+
+  .lyt-mobile-theme {
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .layout-mobile-title {
-    font-size: 16px;
-    font-weight: 800;
-    color: var(--text);
-  }
-
-  .layout-mobile-highlight {
-    color: var(--primary);
-  }
-
-  .layout-mobile-theme-btn {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
     cursor: pointer;
     font-size: 14px;
-    transition: all 0.15s ease;
+    transition: all 0.15s;
   }
+  .lyt-mobile-theme:hover { background: rgba(255,255,255,0.12); }
 
-  .layout-mobile-theme-btn:hover {
-    background: var(--bg-hover);
-  }
-
-  .layout-backdrop {
+  .lyt-backdrop {
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
     z-index: 95;
-    animation: layoutFadeIn 0.15s ease-out;
+    animation: lytFadeIn 0.15s ease-out;
   }
-
-  @keyframes layoutFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  @keyframes lytFadeIn { from { opacity: 0; } to { opacity: 1; } }
 }

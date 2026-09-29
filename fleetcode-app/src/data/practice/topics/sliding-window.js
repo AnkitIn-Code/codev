@@ -21,6 +21,7 @@ export const slidingWindow = {
           id: 'sw-max-sum-size-k',
           title: 'Maximum Sum Subarray of Size K',
           slug: 'maximum-average-subarray-i',
+          url: 'https://www.geeksforgeeks.org/problems/max-sum-subarray-of-size-k5313/1',
           difficulty: 'Easy',
           patternId: 'sliding-window-core',
           hints: {
@@ -45,6 +46,7 @@ export const slidingWindow = {
           id: 'sw-longest-k-distinct',
           title: 'Longest Substring with K Distinct',
           slug: 'longest-substring-with-at-most-k-distinct-characters',
+          url: 'https://www.geeksforgeeks.org/problems/longest-k-unique-characters-substring0853/1',
           difficulty: 'Medium',
           patternId: 'sliding-window-core',
           hints: {

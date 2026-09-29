@@ -2,57 +2,24 @@
 .dash-container {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 32px 32px 64px;
+  padding: 24px 28px 64px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
-/* ── 1. Header ── */
-.dash-header {
+/* ── Actions Row ── */
+.dash-actions-row {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding-bottom: 20px;
+  gap: 16px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
 }
 
-.dash-header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.dash-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--primary);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.dash-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--primary);
-}
-
-.dash-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.02em;
-  margin: 0;
-  line-height: 1.2;
-}
-
 .dash-subtitle {
-  font-size: 13.5px;
+  font-size: 13px;
   color: var(--text-muted);
   margin: 0;
 }
@@ -65,27 +32,13 @@
 }
 
 .dash-btn-random {
-  padding: 8px 14px;
+  padding: 7px 14px;
   font-size: 13px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.dash-btn-random:hover {
-  background: var(--bg-hover);
-  border-color: var(--border-hover);
 }
 
 .dash-btn-practice {
-  padding: 8px 16px;
+  padding: 7px 16px;
   font-size: 13px;
-  border-radius: var(--radius);
-  font-weight: 500;
   text-decoration: none;
 }
 

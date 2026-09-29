@@ -87,10 +87,13 @@ function resolveAttemptDetails(attempt, problemsMap = {}) {
     (attempt.slug && attempt.slug !== attempt.questionId)
   );
 
+  const resolvedUrl = curatedQ?.url || attempt.url || null;
+
   return {
     ...attempt,
     resolvedTitle: title,
     resolvedSlug: slug,
+    resolvedUrl,
     resolvedDifficulty: difficulty,
     resolvedTopicName: topicName,
     resolvedPatternName: patternName,
@@ -441,12 +444,12 @@ export default function HistoryTab() {
                           {isFailed ? '❌' : '💡'}
                         </span>
                         <a
-                          href={lcUrl(item.resolvedSlug)}
+                          href={item.resolvedUrl || lcUrl(item.resolvedSlug)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="hrow-title"
                           onClick={e => e.stopPropagation()}
-                          title="Solve on LeetCode"
+                          title={item.resolvedUrl ? 'Open problem link' : 'Solve on LeetCode'}
                         >
                           {item.resolvedTitle}
                         </a>
@@ -508,12 +511,12 @@ export default function HistoryTab() {
                         {/* Actions */}
                         <div className="hrow-details-actions">
                           <a
-                            href={lcUrl(item.resolvedSlug)}
+                            href={item.resolvedUrl || lcUrl(item.resolvedSlug)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hrow-link-btn"
                           >
-                            Retry on LeetCode ↗
+                            {item.resolvedUrl ? 'Retry Problem ↗' : 'Retry on LeetCode ↗'}
                           </a>
                           <button
                             type="button"

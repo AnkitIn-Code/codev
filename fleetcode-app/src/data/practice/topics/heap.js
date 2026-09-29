@@ -19,8 +19,9 @@ export const heapTopic = {
       questions: [
         {
           id: 'hp-kth-smallest',
-          title: 'Kth Smallest',
-          slug: 'kth-largest-element-in-an-array',
+          title: 'Kth Smallest Element',
+          slug: 'kth-smallest-element',
+          url: 'https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1',
           difficulty: 'Medium',
           patternId: 'heap-core',
           hints: {
@@ -104,13 +105,14 @@ export const heapTopic = {
         {
           id: 'hp-merge-k-sorted-arrays',
           title: 'Merge K Sorted Arrays',
-          slug: 'merge-k-sorted-lists',
-          difficulty: 'Hard',
+          slug: 'merge-k-sorted-arrays',
+          url: 'https://www.geeksforgeeks.org/problems/merge-k-sorted-arrays/1',
+          difficulty: 'Medium',
           patternId: 'heap-core',
           hints: {
-            recognition: 'Merge k sorted linked lists or arrays into one sorted list.',
-            structure: 'Min-heap containing current head of each list. Pop smallest, advance pointer, re-insert.',
-            skeleton: '// Min-heap storing node values\n// while heap not empty: pop min, attach to result, push next node to heap',
+            recognition: 'Merge k sorted arrays into one sorted array.',
+            structure: 'Min-heap containing element, array index, and element index [val, arrIdx, elemIdx]. Pop smallest, advance index in that array, re-insert.',
+            skeleton: '// Min-heap storing [val, i, j]\n// push first element of each of the k arrays\n// while heap not empty: pop min, push next element from same array',
           },
         },
         {

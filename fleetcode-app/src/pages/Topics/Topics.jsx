@@ -79,7 +79,6 @@ export default function Topics() {
       {/* ── Page Header ── */}
       <header className="topics-header">
         <div className="topics-header-left">
-          <h1 className="topics-title">Topics</h1>
           <p className="topics-subtitle">
             {totalTopics} topics grouped into 16 categories, ordered in recommended sequence of learning.
           </p>

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { ALL_TOPICS } from '../../../data/practice/index.js';
 import {
   getAttempts,
@@ -10,90 +10,150 @@ import {
 import LogAttemptModal from '../../../components/LogAttemptModal/LogAttemptModal.jsx';
 import './PatternsTab.css';
 
-function lcUrl(slug) {
-  return `https://leetcode.com/problems/${slug}/`;
+/* ─── helpers ─────────────────────────────────────────────────────────── */
+function lcUrl(slug) { return `https://leetcode.com/problems/${slug}/`; }
+function questionUrl(q) { return q.url || lcUrl(q.slug); }
+function getPlatform(q) {
+  if (q.url) {
+    if (q.url.includes('geeksforgeeks.org')) return { label: 'GFG', title: 'Open on GeeksforGeeks', isCustom: true };
+    if (q.url.includes('lintcode.com')) return { label: 'LintCode', title: 'Open on LintCode', isCustom: true };
+    return { label: 'External', title: 'Open problem link', isCustom: true };
+  }
+  return { label: 'LeetCode', title: 'Open on LeetCode', isCustom: false };
 }
+function diffCls(d = '') { return d.toLowerCase(); }
 
-function difficultyClass(d = '') {
-  return d.toLowerCase();
-}
+/* ─── icons ─────────────────────────────────────────────────────────────── */
+const SearchIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+const ExtIcon = () => (
+  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+  </svg>
+);
+const CheckIcon = () => (
+  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   Main Component
+   ═══════════════════════════════════════════════════════════════════════════ */
 export default function PatternsTab({ filterTopicId, onClearTopicFilter }) {
   const [search, setSearch] = useState('');
-  const [selectedTopic, setSelectedTopic] = useState(filterTopicId || 'all');
+  const [activeTopic, setActiveTopic] = useState(filterTopicId || ALL_TOPICS[0]?.id || '');
   const [diffFilter, setDiffFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'clean' | 'weak' | 'unattempted'
+  const [statusFilter, setStatusFilter] = useState('all');
   const [openHintsMap, setOpenHintsMap] = useState({});
-  const [collapsedTopics, setCollapsedTopics] = useState({});
   const [activeModalQuestion, setActiveModalQuestion] = useState(null);
   const [randomNotice, setRandomNotice] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [sidebarSearch, setSidebarSearch] = useState('');
+  const contentRef = useRef(null);
 
-  // Sync prop filter
+  /* ── Sync prop filter ─────────────────────────────────────────────────── */
   useEffect(() => {
-    if (filterTopicId) setSelectedTopic(filterTopicId);
+    if (filterTopicId) setActiveTopic(filterTopicId);
   }, [filterTopicId]);
 
-  // Reactive store updates
+  /* ── Reactive store updates ───────────────────────────────────────────── */
   useEffect(() => {
-    function onUpdate() {
-      setRefreshKey(k => k + 1);
-    }
+    const onUpdate = () => setRefreshKey(k => k + 1);
     window.addEventListener('fc-practice-updated', onUpdate);
     return () => window.removeEventListener('fc-practice-updated', onUpdate);
   }, []);
 
-  // Map of questionId / slug -> latest attempt
+  /* ── Attempts map ─────────────────────────────────────────────────────── */
   const latestAttempts = useMemo(() => {
     const attempts = getAttempts();
     const map = {};
-    for (let i = 0; i < attempts.length; i++) {
-      const a = attempts[i];
+    for (const a of attempts) {
       if (a.questionId) map[a.questionId] = a;
       if (a.slug) map[a.slug] = a;
     }
     return map;
   }, [refreshKey]);
 
-  // Helper to look up attempt by question
-  function getAttemptForQuestion(q) {
+  function getAttempt(q) {
     if (!q) return null;
     return latestAttempts[q.id] || (q.slug ? latestAttempts[q.slug] : null);
   }
 
-  // Compute global stats
-  const stats = useMemo(() => {
-    let totalQuestions = 0;
-    let cleanCount = 0;
-    let weakCount = 0;
-
-    for (const topic of ALL_TOPICS) {
-      for (const pattern of topic.patterns) {
+  /* ── Global stats ─────────────────────────────────────────────────────── */
+  const globalStats = useMemo(() => {
+    let total = 0, clean = 0, weak = 0;
+    for (const topic of ALL_TOPICS)
+      for (const pattern of topic.patterns)
         for (const q of pattern.questions) {
-          totalQuestions++;
-          const outcome = getAttemptForQuestion(q)?.outcome;
-          if (outcome === 'clean') cleanCount++;
-          else if (outcome === 'hinted' || outcome === 'failed') weakCount++;
+          total++;
+          const o = getAttempt(q)?.outcome;
+          if (o === 'clean') clean++;
+          else if (o === 'hinted' || o === 'failed') weak++;
         }
-      }
-    }
-
-    return { totalQuestions, cleanCount, weakCount };
+    return { total, clean, weak, pct: total ? Math.round((clean / total) * 100) : 0 };
   }, [latestAttempts]);
 
+  /* ── Per-topic stats ──────────────────────────────────────────────────── */
+  const topicStats = useMemo(() => {
+    const map = {};
+    for (const topic of ALL_TOPICS) {
+      let total = 0, clean = 0;
+      for (const p of topic.patterns)
+        for (const q of p.questions) { total++; if (getAttempt(q)?.outcome === 'clean') clean++; }
+      map[topic.id] = { total, clean, pct: total ? Math.round((clean / total) * 100) : 0 };
+    }
+    return map;
+  }, [latestAttempts]);
 
+  /* ── Active topic data ────────────────────────────────────────────────── */
+  const activeTopicData = useMemo(() => ALL_TOPICS.find(t => t.id === activeTopic), [activeTopic]);
 
-  // Handle clicking question checkbox: toggle off if done, or open completion modal if undone
+  /* ── Filtered patterns for active topic ──────────────────────────────── */
+  const filteredPatterns = useMemo(() => {
+    if (!activeTopicData) return [];
+    const q = search.trim().toLowerCase();
+    return activeTopicData.patterns
+      .map(pattern => {
+        const filtered = pattern.questions.filter(question => {
+          if (diffFilter !== 'all' && question.difficulty.toLowerCase() !== diffFilter) return false;
+          const outcome = getAttempt(question)?.outcome;
+          if (statusFilter === 'clean' && outcome !== 'clean') return false;
+          if (statusFilter === 'weak' && outcome !== 'hinted' && outcome !== 'failed') return false;
+          if (statusFilter === 'unattempted' && outcome) return false;
+          if (q) {
+            const hay = `${question.title} ${question.hints?.recognition || ''} ${question.hints?.structure || ''}`.toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+        return filtered.length ? { ...pattern, questions: filtered } : null;
+      })
+      .filter(Boolean);
+  }, [activeTopicData, search, diffFilter, statusFilter, latestAttempts]);
+
+  /* ── Sidebar topic list ───────────────────────────────────────────────── */
+  const sidebarTopics = useMemo(() => {
+    if (!sidebarSearch.trim()) return ALL_TOPICS;
+    const q = sidebarSearch.toLowerCase();
+    return ALL_TOPICS.filter(t => t.name.toLowerCase().includes(q));
+  }, [sidebarSearch]);
+
+  /* ── Handlers ─────────────────────────────────────────────────────────── */
   function handleCheckboxClick(question, pattern, topic) {
-    const current = getAttemptForQuestion(question)?.outcome;
+    const current = getAttempt(question)?.outcome;
     if (current === 'clean' || current === 'hinted') {
-      const planDate = todayISO();
+      const d = todayISO();
       resetQuestionAttempts(question.id);
       if (question.slug) resetQuestionAttempts(question.slug);
-      updatePlanQuestion(planDate, question.id, false);
-      if (question.slug) updatePlanQuestion(planDate, question.slug, false);
+      updatePlanQuestion(d, question.id, false);
+      if (question.slug) updatePlanQuestion(d, question.slug, false);
     } else {
-      setActiveModalQuestion({ question, pattern, topic });
+      setActiveModalQuestion({ question, pattern, topic: activeTopicData });
     }
   }
 
@@ -101,27 +161,16 @@ export default function PatternsTab({ filterTopicId, onClearTopicFilter }) {
     if (!activeModalQuestion) return;
     const { question, pattern, topic } = activeModalQuestion;
     const planDate = todayISO();
-
     logAttempt({
-      questionId: question.id,
-      title: question.title,
-      slug: question.slug,
-      difficulty: question.difficulty,
-      patternId: pattern.id,
-      patternName: pattern.name,
-      topicId: topic.id,
-      topicName: topic.name,
-      outcome: data.outcome,
-      stuckReason: data.stuckReason,
-      note: data.note,
-      minutes: data.minutes,
-      date: planDate,
+      questionId: question.id, title: question.title, slug: question.slug,
+      difficulty: question.difficulty, patternId: pattern.id, patternName: pattern.name,
+      topicId: topic.id, topicName: topic.name,
+      outcome: data.outcome, stuckReason: data.stuckReason, note: data.note,
+      minutes: data.minutes, date: planDate,
     });
-
     const isCompleted = data.outcome !== 'failed';
     updatePlanQuestion(planDate, question.id, isCompleted);
     if (question.slug) updatePlanQuestion(planDate, question.slug, isCompleted);
-
     if (data.outcome === 'clean' && question.slug) {
       try {
         const raw = localStorage.getItem('fc-solved-problems');
@@ -131,460 +180,382 @@ export default function PatternsTab({ filterTopicId, onClearTopicFilter }) {
         window.dispatchEvent(new Event('fc-solved-updated'));
       } catch {}
     }
-
     setActiveModalQuestion(null);
   }
 
-  // Pick a random pattern question to practice
-  function handlePickRandomPattern() {
+  function handleRandomQuestion() {
     const unsolved = [];
-    for (const topic of ALL_TOPICS) {
-      for (const pattern of topic.patterns) {
-        for (const q of pattern.questions) {
-          const outcome = getAttemptForQuestion(q)?.outcome;
-          if (outcome !== 'clean') {
-            unsolved.push({ question: q, pattern, topic });
-          }
-        }
-      }
-    }
-
+    for (const topic of ALL_TOPICS)
+      for (const pattern of topic.patterns)
+        for (const q of pattern.questions)
+          if (getAttempt(q)?.outcome !== 'clean') unsolved.push({ question: q, pattern, topic });
     const pool = unsolved.length > 0 ? unsolved : ALL_TOPICS.flatMap(t => t.patterns.flatMap(p => p.questions.map(q => ({ question: q, pattern: p, topic: t }))));
-    if (pool.length === 0) return;
-
-    const randomIndex = Math.floor(Math.random() * pool.length);
-    const chosen = pool[randomIndex];
-
-    setSelectedTopic('all');
-    setCollapsedTopics(prev => ({ ...prev, [chosen.topic.id]: false }));
-    setRandomNotice(`Picked: ${chosen.question.title} (${chosen.topic.name})`);
+    if (!pool.length) return;
+    const chosen = pool[Math.floor(Math.random() * pool.length)];
+    setActiveTopic(chosen.topic.id);
+    setSearch('');
+    setDiffFilter('all');
+    setStatusFilter('all');
+    setRandomNotice(`🎯 Picked: ${chosen.question.title}`);
     setTimeout(() => setRandomNotice(null), 4000);
-
     setTimeout(() => {
       const el = document.getElementById(`q-${chosen.question.id}`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.classList.add('pt-q-card--highlighted');
-        setTimeout(() => {
-          el.classList.remove('pt-q-card--highlighted');
-        }, 2500);
+        el.classList.add('ptnav-q--pulse');
+        setTimeout(() => el.classList.remove('ptnav-q--pulse'), 2000);
       }
-    }, 150);
+    }, 200);
   }
 
   function toggleHints(qId) {
-    setOpenHintsMap(prev => ({ ...prev, [qId]: !prev[qId] }));
+    setOpenHintsMap(p => ({ ...p, [qId]: !p[qId] }));
   }
 
-  function toggleTopicCollapse(topicId) {
-    setCollapsedTopics(prev => ({ ...prev, [topicId]: !prev[topicId] }));
-  }
+  /* ─── Scroll content to top when topic changes ─────────────────────── */
+  useEffect(() => {
+    if (contentRef.current) contentRef.current.scrollTop = 0;
+  }, [activeTopic]);
 
-  function collapseAll() {
-    const all = {};
-    for (const t of ALL_TOPICS) all[t.id] = true;
-    setCollapsedTopics(all);
-  }
-
-  function expandAll() {
-    setCollapsedTopics({});
-  }
-
-  // Filtered topics and questions
-  const filteredTopics = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    const result = [];
-
-    for (const topic of ALL_TOPICS) {
-      if (selectedTopic !== 'all' && topic.id !== selectedTopic) continue;
-
-      const matchedPatterns = [];
-
-      for (const pattern of topic.patterns) {
-        const matchedQuestions = pattern.questions.filter(question => {
-          // Difficulty filter
-          if (diffFilter !== 'all' && question.difficulty.toLowerCase() !== diffFilter) return false;
-
-          // Status filter
-          const outcome = getAttemptForQuestion(question)?.outcome;
-          if (statusFilter === 'clean' && outcome !== 'clean') return false;
-          if (statusFilter === 'weak' && outcome !== 'hinted' && outcome !== 'failed') return false;
-          if (statusFilter === 'unattempted' && outcome) return false;
-
-          // Search query
-          if (q) {
-            const haystack = `${topic.order}. ${topic.name} ${question.title} ${question.hints?.recognition || ''} ${question.hints?.structure || ''}`.toLowerCase();
-            if (!haystack.includes(q)) return false;
-          }
-
-          return true;
-        });
-
-        if (matchedQuestions.length > 0) {
-          matchedPatterns.push({
-            ...pattern,
-            questions: matchedQuestions,
-          });
-        }
-      }
-
-      if (matchedPatterns.length > 0) {
-        // Calculate topic progress
-        const allTopicQuestions = topic.patterns.flatMap(p => p.questions);
-        const topicClean = allTopicQuestions.filter(question => getAttemptForQuestion(question)?.outcome === 'clean').length;
-
-        result.push({
-          ...topic,
-          patterns: matchedPatterns,
-          totalQuestionsInTopic: allTopicQuestions.length,
-          cleanCountInTopic: topicClean,
-        });
-      }
-    }
-
-    return result;
-  }, [search, selectedTopic, diffFilter, statusFilter, latestAttempts]);
-
+  /* ═════════════════════════════════════════════════════════════════════
+     Render
+     ═════════════════════════════════════════════════════════════════════ */
   return (
-    <div className="patterns-tab">
-      {/* ── Top stats bar ─────────────────────────────────────────────────── */}
-      <div className="pt-stats-bar">
-        <div className="pt-stats-left">
-          <div className="pt-stat-pill">
-            <span className="pt-stat-val">20</span>
-            <span className="pt-stat-lbl">Topics</span>
-          </div>
-          <div className="pt-stat-pill">
-            <span className="pt-stat-val">{stats.totalQuestions}</span>
-            <span className="pt-stat-lbl">Curated Problems</span>
-          </div>
-          <div className="pt-stat-pill pt-stat-pill--clean">
-            <span className="pt-stat-val">{stats.cleanCount}</span>
-            <span className="pt-stat-lbl">Mastered (Clean)</span>
-          </div>
-          {stats.weakCount > 0 && (
-            <div className="pt-stat-pill pt-stat-pill--weak">
-              <span className="pt-stat-val">{stats.weakCount}</span>
-              <span className="pt-stat-lbl">Needs Work</span>
+    <div className="ptnav-root">
+
+      {/* ══ LEFT SIDEBAR ══════════════════════════════════════════════ */}
+      <aside className="ptnav-sidebar">
+
+        {/* Sidebar header */}
+        <div className="ptnav-sidebar-header">
+          <div className="ptnav-brand">
+            <span className="ptnav-brand-icon">📚</span>
+            <div>
+              <div className="ptnav-brand-title">DSA Patterns</div>
+              <div className="ptnav-brand-sub">{ALL_TOPICS.length} topics · {globalStats.total} problems</div>
             </div>
-          )}
-        </div>
+          </div>
 
-        <div className="pt-stats-right">
-          <button
-            type="button"
-            className="pt-random-pattern-btn"
-            onClick={handlePickRandomPattern}
-            title="Randomly pick an unsolved pattern question to practice"
-          >
-            🎲 Random Pattern Question
-          </button>
-          <button type="button" className="pt-collapse-btn" onClick={expandAll} title="Expand all topics">
-            Expand All
-          </button>
-          <button type="button" className="pt-collapse-btn" onClick={collapseAll} title="Collapse all topics">
-            Collapse All
-          </button>
-        </div>
-      </div>
-
-      {/* Random Question Toast */}
-      {randomNotice && (
-        <div className="pt-random-toast" role="status" aria-live="polite">
-          <span>🎯 {randomNotice}</span>
-        </div>
-      )}
-
-      {/* ── Search & Filter Controls ──────────────────────────────────────── */}
-      <div className="pt-controls">
-        <div className="pt-search-row">
-          <div className="pt-search-wrap">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="pt-search-icon">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          {/* Global progress ring */}
+          <div className="ptnav-global-ring" title={`${globalStats.pct}% mastered`}>
+            <svg width="52" height="52" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(99,102,241,0.12)" strokeWidth="4" />
+              <circle
+                cx="26" cy="26" r="22" fill="none"
+                stroke="url(#ringGrad)" strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray={`${2 * Math.PI * 22}`}
+                strokeDashoffset={`${2 * Math.PI * 22 * (1 - globalStats.pct / 100)}`}
+                transform="rotate(-90 26 26)"
+                style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+              />
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#6366f1" />
+                  <stop offset="100%" stopColor="#8b5cf6" />
+                </linearGradient>
+              </defs>
             </svg>
-            <input
-              id="patterns-search"
-              type="text"
-              className="pt-search-input"
-              placeholder="Search problems by name, pattern, topic, or keywords..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              aria-label="Search problems"
-            />
-            {search && (
-              <button type="button" className="pt-search-clear" onClick={() => setSearch('')}>
-                ×
-              </button>
-            )}
-          </div>
-
-          {/* Difficulty filter buttons */}
-          <div className="pt-filter-group" role="group" aria-label="Filter by difficulty">
-            {['all', 'easy', 'medium', 'hard'].map(d => (
-              <button
-                key={d}
-                type="button"
-                className={`pt-filter-btn pt-filter-btn--${d} ${diffFilter === d ? 'pt-filter-btn--active' : ''}`}
-                onClick={() => setDiffFilter(d)}
-              >
-                {d.charAt(0).toUpperCase() + d.slice(1)}
-              </button>
-            ))}
-          </div>
-
-          {/* Status filter buttons */}
-          <div className="pt-filter-group" role="group" aria-label="Filter by status">
-            {[
-              { id: 'all', label: 'All' },
-              { id: 'clean', label: '✓ Solved' },
-              { id: 'weak', label: '⚠️ Weak' },
-              { id: 'unattempted', label: 'Unsolved' },
-            ].map(s => (
-              <button
-                key={s.id}
-                type="button"
-                className={`pt-filter-btn ${statusFilter === s.id ? 'pt-filter-btn--active' : ''}`}
-                onClick={() => setStatusFilter(s.id)}
-              >
-                {s.label}
-              </button>
-            ))}
+            <div className="ptnav-ring-label">
+              <div className="ptnav-ring-pct">{globalStats.pct}%</div>
+            </div>
           </div>
         </div>
 
-        {/* ── Topic Selector Pills (All 20 Topics) ──────────────────────────── */}
-        <div className="pt-topic-pills-bar" role="group" aria-label="Select topic">
-          <button
-            type="button"
-            className={`pt-topic-pill ${selectedTopic === 'all' ? 'pt-topic-pill--active' : ''}`}
-            onClick={() => {
-              setSelectedTopic('all');
-              if (onClearTopicFilter) onClearTopicFilter();
-            }}
-          >
-            All Topics (20)
-          </button>
-          {ALL_TOPICS.map(t => (
-            <button
-              key={t.id}
-              type="button"
-              className={`pt-topic-pill ${selectedTopic === t.id ? 'pt-topic-pill--active' : ''}`}
-              onClick={() => setSelectedTopic(t.id)}
-            >
-              <span className="pt-pill-order">{t.order}.</span> {t.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Topic Sections List ───────────────────────────────────────────── */}
-      <div className="pt-topics-container">
-        {filteredTopics.length === 0 ? (
-          <div className="pt-no-results">
-            <div className="pt-no-results-icon">🔍</div>
-            <h3>No matching problems found</h3>
-            <p>Try adjusting your search query, difficulty, or status filter.</p>
-            <button
-              type="button"
-              className="btn btn-outline"
-              onClick={() => {
-                setSearch('');
-                setSelectedTopic('all');
-                setDiffFilter('all');
-                setStatusFilter('all');
-              }}
-            >
-              Reset Filters
-            </button>
+        {/* Mini global stats */}
+        <div className="ptnav-global-stats">
+          <div className="ptnav-gstat">
+            <span className="ptnav-gstat-val" style={{ color: '#34d399' }}>{globalStats.clean}</span>
+            <span className="ptnav-gstat-lbl">Mastered</span>
           </div>
-        ) : (
-          filteredTopics.map(topic => {
-            const isCollapsed = collapsedTopics[topic.id];
-            const questions = topic.patterns.flatMap(p => p.questions);
-            const cleanCount = topic.cleanCountInTopic || 0;
-            const totalCount = topic.totalQuestionsInTopic || questions.length;
-            const pct = Math.round((cleanCount / totalCount) * 100);
+          <div className="ptnav-gstat-sep" />
+          <div className="ptnav-gstat">
+            <span className="ptnav-gstat-val" style={{ color: '#fb7185' }}>{globalStats.weak}</span>
+            <span className="ptnav-gstat-lbl">Needs Work</span>
+          </div>
+          <div className="ptnav-gstat-sep" />
+          <div className="ptnav-gstat">
+            <span className="ptnav-gstat-val">{globalStats.total - globalStats.clean - globalStats.weak}</span>
+            <span className="ptnav-gstat-lbl">Untouched</span>
+          </div>
+        </div>
 
+        {/* Sidebar search */}
+        <div className="ptnav-sidebar-search-wrap">
+          <SearchIcon />
+          <input
+            className="ptnav-sidebar-search"
+            placeholder="Find topic…"
+            value={sidebarSearch}
+            onChange={e => setSidebarSearch(e.target.value)}
+          />
+        </div>
+
+        {/* Topic list */}
+        <nav className="ptnav-topic-list">
+          {sidebarTopics.map(topic => {
+            const s = topicStats[topic.id];
+            const isActive = topic.id === activeTopic;
+            const barWidth = s.pct;
             return (
-              <section key={topic.id} className="pt-topic-section" id={`topic-section-${topic.id}`}>
-                {/* Section Header */}
-                <div
-                  className="pt-section-header"
-                  onClick={() => toggleTopicCollapse(topic.id)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={e => e.key === 'Enter' && toggleTopicCollapse(topic.id)}
-                >
-                  <div className="pt-section-header-left">
-                    <span className="pt-section-num">{String(topic.order).padStart(2, '0')}</span>
-                    <span className="pt-section-icon">{topic.icon}</span>
-                    <div className="pt-section-title-wrap">
-                      <h2 className="pt-section-title">{topic.order}. {topic.name}</h2>
-                      <p className="pt-section-desc">{topic.description}</p>
-                    </div>
-                  </div>
+              <button
+                key={topic.id}
+                className={`ptnav-topic-item ${isActive ? 'ptnav-topic-item--active' : ''}`}
+                onClick={() => {
+                  setActiveTopic(topic.id);
+                  if (onClearTopicFilter) onClearTopicFilter();
+                }}
+              >
+                <div className="ptnav-topic-item-top">
+                  <span className="ptnav-topic-icon">{topic.icon}</span>
+                  <span className="ptnav-topic-name">{topic.name}</span>
+                  <span className="ptnav-topic-count">{s.clean}/{s.total}</span>
+                </div>
+                <div className="ptnav-topic-bar-track">
+                  <div
+                    className="ptnav-topic-bar-fill"
+                    style={{ width: `${barWidth}%` }}
+                  />
+                </div>
+              </button>
+            );
+          })}
+        </nav>
 
-                  <div className="pt-section-header-right">
-                    <div className="pt-topic-progress">
-                      <span className="pt-progress-text">
-                        <strong>{cleanCount}</strong> / {totalCount} completed
-                      </span>
-                      <div className="pt-progress-track" title={`${pct}% completed`}>
-                        <div className="pt-progress-fill" style={{ width: `${pct}%` }} />
+        {/* Random button */}
+        <div className="ptnav-sidebar-footer">
+          <button className="ptnav-random-btn" onClick={handleRandomQuestion}>
+            🎲 Random Problem
+          </button>
+        </div>
+      </aside>
+
+      {/* ══ MAIN CONTENT ══════════════════════════════════════════════ */}
+      <main className="ptnav-content" ref={contentRef}>
+
+        {/* Random notice */}
+        {randomNotice && (
+          <div className="ptnav-toast" role="status">{randomNotice}</div>
+        )}
+
+        {activeTopicData ? (
+          <>
+
+
+            {/* Filter bar */}
+            <div className="ptnav-filter-bar">
+              <div className="ptnav-search-wrap">
+                <SearchIcon />
+                <input
+                  id="patterns-search"
+                  type="text"
+                  className="ptnav-search-input"
+                  placeholder="Search questions, hints, patterns…"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+                {search && (
+                  <button className="ptnav-search-clear" onClick={() => setSearch('')}>×</button>
+                )}
+              </div>
+
+              <div className="ptnav-filter-group">
+                {['all', 'easy', 'medium', 'hard'].map(d => (
+                  <button
+                    key={d}
+                    className={`ptnav-flt-btn ptnav-flt-btn--${d} ${diffFilter === d ? 'ptnav-flt-btn--active' : ''}`}
+                    onClick={() => setDiffFilter(d)}
+                  >
+                    {d.charAt(0).toUpperCase() + d.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              <div className="ptnav-filter-group">
+                {[
+                  { id: 'all', label: 'All' },
+                  { id: 'clean', label: '✓ Solved' },
+                  { id: 'weak', label: '⚠ Weak' },
+                  { id: 'unattempted', label: 'Unsolved' },
+                ].map(s => (
+                  <button
+                    key={s.id}
+                    className={`ptnav-flt-btn ${statusFilter === s.id ? 'ptnav-flt-btn--active' : ''}`}
+                    onClick={() => setStatusFilter(s.id)}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Patterns list */}
+            {filteredPatterns.length === 0 ? (
+              <div className="ptnav-empty">
+                <div className="ptnav-empty-icon">🔍</div>
+                <h3>No matching questions</h3>
+                <p>Try clearing the search or changing filters.</p>
+                <button
+                  className="ptnav-empty-reset"
+                  onClick={() => { setSearch(''); setDiffFilter('all'); setStatusFilter('all'); }}
+                >
+                  Reset Filters
+                </button>
+              </div>
+            ) : (
+              <div className="ptnav-patterns-list">
+                {filteredPatterns.map((pattern, patIdx) => (
+                  <div key={pattern.id} className="ptnav-pattern-section" id={`pattern-${pattern.id}`}>
+
+                    {/* Pattern header */}
+                    <div className="ptnav-pattern-header">
+                      <div className="ptnav-pattern-header-left">
+                        <span className="ptnav-pattern-num">
+                          {String(patIdx + 1).padStart(2, '0')}
+                        </span>
+                        <div>
+                          <div className="ptnav-pattern-name">{pattern.name}</div>
+                          {pattern.coreIdea && (
+                            <div className="ptnav-pattern-idea">{pattern.coreIdea}</div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="ptnav-pattern-header-right">
+                        <span className="ptnav-pattern-ds">{pattern.dataStructure}</span>
+                        <span className="ptnav-pattern-qcount">{pattern.questions.length} problems</span>
                       </div>
                     </div>
 
-                    <span className={`pt-collapse-arrow ${isCollapsed ? 'pt-collapse-arrow--collapsed' : ''}`}>
-                      ▼
-                    </span>
-                  </div>
-                </div>
+                    {/* Signals */}
+                    {pattern.signals?.length > 0 && (
+                      <div className="ptnav-signals">
+                        <span className="ptnav-signals-label">Signals:</span>
+                        {pattern.signals.map((sig, i) => (
+                          <span key={i} className="ptnav-signal-chip">{sig}</span>
+                        ))}
+                      </div>
+                    )}
 
-                {/* Section Body / Problem List */}
-                {!isCollapsed && (
-                  <div className="pt-section-body">
-                    {topic.patterns.map(pattern => (
-                      <div key={pattern.id} className="pt-pattern-block">
-                        {pattern.signals && pattern.signals.length > 0 && (
-                          <div className="pt-pattern-signals">
-                            <span className="pt-signals-title">Signals:</span>
-                            {pattern.signals.map((sig, sIdx) => (
-                              <span key={sIdx} className="pt-signal-chip">• {sig}</span>
-                            ))}
-                          </div>
-                        )}
+                    {/* Question rows */}
+                    <div className="ptnav-q-table">
+                      {pattern.questions.map((question, qIdx) => {
+                        const attempt = getAttempt(question);
+                        const outcome = attempt?.outcome;
+                        const isClean = outcome === 'clean';
+                        const isHinted = outcome === 'hinted';
+                        const isStuck = outcome === 'failed';
+                        const isHintsOpen = !!openHintsMap[question.id];
+                        const statusKey = isClean ? 'clean' : isHinted ? 'hinted' : isStuck ? 'stuck' : 'none';
+                        const platform = getPlatform(question);
 
-                        <div className="pt-q-list">
-                          {pattern.questions.map(question => {
-                            const isHintsOpen = !!openHintsMap[question.id];
-                            const attempt = getAttemptForQuestion(question);
-                            const outcome = attempt?.outcome;
-                            const isClean = outcome === 'clean';
-                            const isHinted = outcome === 'hinted';
-                            const isStuck = outcome === 'failed';
+                        return (
+                          <div
+                            key={question.id}
+                            id={`q-${question.id}`}
+                            className={`ptnav-q ptnav-q--${statusKey}`}
+                          >
+                            <div className="ptnav-q-row">
+                              {/* Index */}
+                              <span className="ptnav-q-idx">{qIdx + 1}</span>
 
-                            return (
-                              <div
-                                key={question.id}
-                                className={`pt-q-card ${isClean ? 'pt-q-card--clean' : isHinted ? 'pt-q-card--hinted' : isStuck ? 'pt-q-card--stuck' : ''}`}
-                                id={`q-${question.id}`}
+                              {/* Checkbox */}
+                              <button
+                                className={`ptnav-cb ptnav-cb--${statusKey}`}
+                                onClick={() => handleCheckboxClick(question, pattern, activeTopicData)}
+                                title={isClean ? 'Click to unmark' : 'Log attempt'}
+                                aria-label={`Mark ${question.title}`}
                               >
-                                <div className="pt-q-row">
-                                  {/* Left: Checkbox + Title + LeetCode Link */}
-                                  <div className="pt-q-left">
-                                    <button
-                                      type="button"
-                                      className={`pt-checkbox ${isClean ? 'pt-checkbox--clean' : isHinted ? 'pt-checkbox--hinted' : ''}`}
-                                      onClick={() => handleCheckboxClick(question, pattern, topic)}
-                                      title={isClean ? 'Cleanly solved (Click to uncheck)' : isHinted ? 'Completed with hints (Click to uncheck)' : 'Click to check off and log completion'}
-                                      aria-label={`Mark ${question.title} as completed`}
-                                    >
-                                      {isClean && (
-                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                          <polyline points="20 6 9 17 4 12" />
-                                        </svg>
-                                      )}
-                                      {isHinted && <span className="pt-checkbox-hint-dot">💡</span>}
-                                    </button>
-                                    <a
-                                      href={lcUrl(question.slug)}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="pt-q-title"
-                                      title="Open on LeetCode"
-                                    >
-                                      {question.title}
-                                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="pt-q-ext">
-                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                        <polyline points="15 3 21 3 21 9" />
-                                        <line x1="10" y1="14" x2="21" y2="3" />
-                                      </svg>
-                                    </a>
+                                {isClean && <CheckIcon />}
+                                {isHinted && <span style={{ fontSize: '9px' }}>💡</span>}
+                              </button>
+
+                              {/* Title + link */}
+                              <a
+                                href={questionUrl(question)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`ptnav-q-title ptnav-q-title--${statusKey}`}
+                                title={platform.title}
+                              >
+                                {question.title}
+                                {platform.isCustom && (
+                                  <span className="ptnav-platform-tag" title={platform.title}>
+                                    {platform.label}
+                                  </span>
+                                )}
+                                <ExtIcon />
+                              </a>
+
+                              {/* Right side */}
+                              <div className="ptnav-q-meta">
+                                <span className={`badge ptnav-badge ${diffCls(question.difficulty)}`}>
+                                  {question.difficulty}
+                                </span>
+
+                                {question.hints && (
+                                  <button
+                                    className={`ptnav-hint-btn ${isHintsOpen ? 'ptnav-hint-btn--open' : ''}`}
+                                    onClick={() => toggleHints(question.id)}
+                                    aria-expanded={isHintsOpen}
+                                  >
+                                    💡 Hints {isHintsOpen ? '▲' : '▼'}
+                                  </button>
+                                )}
+
+                                <button
+                                  className={`ptnav-status ptnav-status--${statusKey}`}
+                                  onClick={() => handleCheckboxClick(question, pattern, activeTopicData)}
+                                >
+                                  {isClean && '✓ Solved'}
+                                  {isHinted && '💡 Hinted'}
+                                  {isStuck && '✕ Stuck'}
+                                  {!isClean && !isHinted && !isStuck && 'Attempt'}
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Hints drawer */}
+                            {isHintsOpen && question.hints && (
+                              <div className="ptnav-hints-drawer">
+                                {question.hints.recognition && (
+                                  <div className="ptnav-hint-block">
+                                    <span className="ptnav-hint-label">🎯 Pattern Recognition</span>
+                                    <p className="ptnav-hint-text">{question.hints.recognition}</p>
                                   </div>
-
-                                  {/* Right: Difficulty + Status + Action Buttons */}
-                                  <div className="pt-q-right">
-                                    <span className={`badge ${difficultyClass(question.difficulty)}`}>
-                                      {question.difficulty}
-                                    </span>
-
-                                    {/* Hints Drawer Button */}
-                                    {question.hints && (
-                                      <button
-                                        type="button"
-                                        className={`pt-btn-hint ${isHintsOpen ? 'pt-btn-hint--active' : ''}`}
-                                        onClick={() => toggleHints(question.id)}
-                                        aria-expanded={isHintsOpen}
-                                        title="Toggle intuition and code skeleton"
-                                      >
-                                        💡 Hints {isHintsOpen ? '▲' : '▼'}
-                                      </button>
-                                    )}
-
-                                    {/* Dynamic Status Badge (initially Not Attempted, changes with checkbox selection) */}
-                                    <button
-                                      type="button"
-                                      className={`pt-status-pill ${
-                                        isClean ? 'pt-status-pill--clean' :
-                                        isHinted ? 'pt-status-pill--hinted' :
-                                        isStuck ? 'pt-status-pill--stuck' :
-                                        'pt-status-pill--unattempted'
-                                      }`}
-                                      onClick={() => handleCheckboxClick(question, pattern, topic)}
-                                      title={
-                                        isClean ? 'Solved cleanly. Click to reset or change.' :
-                                        isHinted ? 'Solved with hints. Click to reset or change.' :
-                                        isStuck ? 'Marked stuck. Click to update completion.' :
-                                        'Not attempted. Click to log completion.'
-                                      }
-                                    >
-                                      {isClean && '✓ Solved'}
-                                      {isHinted && '💡 Hinted'}
-                                      {isStuck && '❌ Stuck'}
-                                      {!isClean && !isHinted && !isStuck && 'Not Attempted'}
-                                    </button>
+                                )}
+                                {question.hints.structure && (
+                                  <div className="ptnav-hint-block">
+                                    <span className="ptnav-hint-label">🧠 Core Strategy</span>
+                                    <p className="ptnav-hint-text">{question.hints.structure}</p>
                                   </div>
-                                </div>
-
-                                {/* Hints Collapsible Drawer */}
-                                {isHintsOpen && question.hints && (
-                                  <div className="pt-q-hints-drawer">
-                                    {question.hints.recognition && (
-                                      <div className="pt-hint-segment">
-                                        <span className="pt-hint-label">Pattern Recognition</span>
-                                        <p className="pt-hint-text">{question.hints.recognition}</p>
-                                      </div>
-                                    )}
-                                    {question.hints.structure && (
-                                      <div className="pt-hint-segment">
-                                        <span className="pt-hint-label">Core Strategy / Invariant</span>
-                                        <p className="pt-hint-text">{question.hints.structure}</p>
-                                      </div>
-                                    )}
-                                    {question.hints.skeleton && (
-                                      <div className="pt-hint-segment">
-                                        <span className="pt-hint-label">Algorithm Skeleton</span>
-                                        <pre className="pt-hint-code"><code>{question.hints.skeleton}</code></pre>
-                                      </div>
-                                    )}
+                                )}
+                                {question.hints.skeleton && (
+                                  <div className="ptnav-hint-block">
+                                    <span className="ptnav-hint-label">📐 Algorithm Skeleton</span>
+                                    <pre className="ptnav-hint-code"><code>{question.hints.skeleton}</code></pre>
                                   </div>
                                 )}
                               </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-            );
-          })
-        )}
-      </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
 
-      {/* Completion Modal */}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="ptnav-empty">
+            <div className="ptnav-empty-icon">👈</div>
+            <h3>Select a topic from the sidebar</h3>
+          </div>
+        )}
+      </main>
+
+      {/* Modal */}
       {activeModalQuestion && (
         <LogAttemptModal
           questionItem={{
@@ -593,7 +564,7 @@ export default function PatternsTab({ filterTopicId, onClearTopicFilter }) {
             slug: activeModalQuestion.question.slug,
             difficulty: activeModalQuestion.question.difficulty,
             patternName: activeModalQuestion.pattern.name,
-            topicName: activeModalQuestion.topic.name,
+            topicName: activeTopicData?.name,
           }}
           onSave={handleModalSave}
           onCancel={() => setActiveModalQuestion(null)}

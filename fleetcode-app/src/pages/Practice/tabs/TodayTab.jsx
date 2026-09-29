@@ -26,7 +26,10 @@ function difficultyClass(d) {
   return d.toLowerCase();
 }
 
-function lcUrl(slug) {
+function questionUrl(item) {
+  if (!item) return 'https://leetcode.com/problemset/';
+  if (item.url) return item.url;
+  const slug = item.slug || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : '');
   return `https://leetcode.com/problems/${slug}/`;
 }
 
@@ -180,12 +183,12 @@ function QuestionRow({ questionItem, planDate, onUpdate }) {
             )}
 
             <a
-              href={lcUrl(slug)}
+              href={questionUrl(questionItem)}
               target="_blank"
               rel="noopener noreferrer"
               className="qrow-title"
               id={`qrow-link-${qId}`}
-              title="Solve on LeetCode"
+              title={questionItem.url ? 'Open problem link' : 'Solve on LeetCode'}
             >
               {title}
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="qrow-ext-icon">

@@ -98,17 +98,11 @@ export default function Dashboard() {
 
   return (
     <div className="dash-container">
-      {/* ── 1. Minimal Header ── */}
-      <header className="dash-header">
-        <div className="dash-header-left">
-          <div className="dash-badge">
-            <span className="dash-dot" /> FleetCode 2026
-          </div>
-          <h1 className="dash-title">Dashboard</h1>
-          <p className="dash-subtitle">
-            {totalProblems.toLocaleString()} problems &middot; 659 companies &middot; 10 curated sheets
-          </p>
-        </div>
+      {/* ── Actions Row ── */}
+      <div className="dash-actions-row">
+        <p className="dash-subtitle">
+          {totalProblems.toLocaleString()} problems &middot; 659 companies &middot; 10 curated sheets
+        </p>
         <div className="dash-header-actions">
           <button type="button" onClick={handleRandomProblem} className="btn btn-outline dash-btn-random">
             🎲 Pick Random
@@ -117,7 +111,7 @@ export default function Dashboard() {
             Practice Problems →
           </Link>
         </div>
-      </header>
+      </div>
 
       {/* ── 2. Minimal Metrics Grid ── */}
       <div className="dash-metrics-grid">

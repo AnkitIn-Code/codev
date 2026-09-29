@@ -31,8 +31,9 @@ export const kadanePattern = {
         },
         {
           id: 'kadane-min-subarray-sum',
-          title: 'Minimum Subarray Sum',
-          slug: 'maximum-subarray',
+          title: 'Minimum Subarray Sum (Smallest Sum Contiguous Subarray)',
+          slug: 'smallest-sum-contiguous-subarray',
+          url: 'https://www.geeksforgeeks.org/problems/smallest-sum-contiguous-subarray/1',
           difficulty: 'Easy',
           patternId: 'kadane-core',
           hints: {
