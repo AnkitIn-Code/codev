@@ -12,11 +12,21 @@
   --accent:         #6366f1;
   --accent-glow:    rgba(99, 102, 241, 0.25);
 
-  /* Sidebar (always dark) */
-  --sb-bg:          #0d111c;
-  --sb-border:      rgba(255, 255, 255, 0.06);
-  --sb-width:       240px;
-  --sb-width-coll:  68px;
+  /* Sidebar — Light Mode */
+  --sb-bg:             #ffffff;
+  --sb-border:         #e2e8f0;
+  --sb-text:           #0f172a;
+  --sb-text-secondary: #475569;
+  --sb-text-muted:     #94a3b8;
+  --sb-hover:          #f1f5f9;
+  --sb-active-bg:      #eef2ff;
+  --sb-active-text:    #4f46e5;
+  --sb-pill-bg:        #f1f5f9;
+  --sb-pill-text:      #64748b;
+  --sb-card-bg:        #f8fafc;
+  --sb-card-border:    #e2e8f0;
+  --sb-width:          240px;
+  --sb-width-coll:     68px;
 
   /* Surfaces */
   --bg:             #f8fafc;
@@ -74,6 +84,20 @@
    DESIGN TOKENS — Dark Mode
    ══════════════════════════════════════════════ */
 [data-theme="dark"] {
+  /* Sidebar — Dark Mode */
+  --sb-bg:             #0d111c;
+  --sb-border:         rgba(255, 255, 255, 0.07);
+  --sb-text:           #f0f4ff;
+  --sb-text-secondary: rgba(255, 255, 255, 0.5);
+  --sb-text-muted:     rgba(255, 255, 255, 0.28);
+  --sb-hover:          rgba(255, 255, 255, 0.07);
+  --sb-active-bg:      linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.15));
+  --sb-active-text:    #ffffff;
+  --sb-pill-bg:        rgba(255, 255, 255, 0.08);
+  --sb-pill-text:      rgba(255, 255, 255, 0.35);
+  --sb-card-bg:        rgba(255, 255, 255, 0.04);
+  --sb-card-border:    rgba(255, 255, 255, 0.07);
+
   --bg:             #0f1117;
   --bg-secondary:   #161b27;
   --bg-tertiary:    #1a2235;
@@ -390,3 +414,42 @@ h1, h2, h3, h4, h5, h6 { font-weight: 700; line-height: 1.2; }
 @media (max-width: 640px) {
   .page-wrap { padding: 16px; }
 }
+
+/* ══════════════════════════════════════════════
+   CIRCULAR VIEW TRANSITION (Theme Expansion Animation)
+   ══════════════════════════════════════════════ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999999;
+}
+
+/* Fallback circular ripple for browsers without View Transitions */
+.theme-circle-ripple {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999999;
+  transform: translate(-50%, -50%) scale(0);
+  animation: themeRippleExpand 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes themeRippleExpand {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+

@@ -1,24 +1,36 @@
 /* ─────────────────────────────────────────────────────────────────────────
-   CodexTab.css  –  Ember's Codex Authentic Dark Theme Design System
+   CodexTab.css  –  Ember's Codex Authentic Design System (Dark & Light)
    Exact match for https://embers.himeow.workers.dev/ (without cats)
+   Fully theme-responsive across FleetCode
    ───────────────────────────────────────────────────────────────────────── */
 
 .embers-root {
-  --embers-bg: #0a0a0a;
-  --embers-bg-alt: #111111;
-  --embers-border: #1f1f1f;
-  --embers-border-strong: #2a2a2a;
-  --embers-text: #ededed;
-  --embers-text-dim: #a3a3a3;
-  --embers-text-faint: #6b6b6b;
-  --embers-chip-bg: #1c1c1c;
-  --embers-row-border: #191919;
+  /* Inherit directly from FleetCode design tokens for 100% visual consistency */
+  --embers-bg: var(--bg);
+  --embers-bg-alt: var(--bg-secondary);
+  --embers-border: var(--border);
+  --embers-border-strong: var(--border-hover);
+  --embers-text: var(--text);
+  --embers-text-dim: var(--text-secondary);
+  --embers-text-faint: var(--text-muted);
+  --embers-chip-bg: var(--bg-tertiary);
+  --embers-row-border: var(--border-light);
+  --embers-row-hover: var(--bg-hover);
+  --embers-input-bg: var(--bg-secondary);
+  --embers-card-bg: var(--bg-card);
   --embers-green: #2cbb5d;
-  --embers-green-dark: #0e2a1b;
-  --embers-green-border: #1b4d2e;
+  --embers-green-dark: rgba(44, 187, 93, 0.12);
+  --embers-green-border: rgba(44, 187, 93, 0.28);
   --embers-easy: #00af9b;
   --embers-med: #ffb800;
   --embers-hard: #ff2d55;
+  --embers-donut-bg: var(--border);
+  --embers-switch-off: var(--border-hover);
+  --embers-pills-bg: var(--bg-tertiary);
+  --embers-btn-bg: var(--bg-secondary);
+  --embers-btn-hover: var(--bg-hover);
+  --embers-check-idle: var(--text-muted);
+  --embers-shadow: var(--shadow-xl);
 
   display: flex;
   width: 100%;
@@ -28,6 +40,16 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   overflow: hidden;
   position: relative;
+}
+
+[data-theme="dark"] .embers-root,
+.dark .embers-root {
+  --embers-green: #2cbb5d;
+  --embers-green-dark: #0e2a1b;
+  --embers-green-border: #1b4d2e;
+  --embers-easy: #00af9b;
+  --embers-med: #ffb800;
+  --embers-hard: #ff2d55;
 }
 
 /* ─── Sidebar ───────────────────────────────────────────────────────────── */
@@ -60,7 +82,7 @@
 .embers-sidebar-title {
   font-size: 15px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--embers-text);
   margin: 0;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -84,7 +106,7 @@
 .embers-collapse-btn:hover {
   background: var(--embers-bg-alt);
   border-color: var(--embers-border);
-  color: #fff;
+  color: var(--embers-text);
 }
 
 /* ─── Progress Card ─────────────────────────────────────────────────────── */
@@ -115,7 +137,7 @@
 
 .embers-donut-bg {
   fill: none;
-  stroke: #222222;
+  stroke: var(--embers-donut-bg);
   stroke-width: 4;
 }
 
@@ -131,7 +153,7 @@
   position: absolute;
   font-size: 11px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--embers-text);
 }
 
 .embers-stats-list {
@@ -150,7 +172,7 @@
   line-height: 1.35;
 }
 
-.embers-stat-solved .embers-stat-label { color: #888888; }
+.embers-stat-solved .embers-stat-label { color: var(--embers-text-faint); }
 .embers-stat-solved .embers-stat-val   { color: var(--embers-text-dim); }
 
 .embers-stat-easy .embers-stat-label,
@@ -184,7 +206,7 @@
 }
 
 .embers-topics-wrap::-webkit-scrollbar-thumb {
-  background: #222;
+  background: var(--embers-border);
   border-radius: 4px;
 }
 
@@ -223,7 +245,7 @@
 
 .embers-topic-item:hover {
   background-color: var(--embers-bg-alt);
-  color: #ffffff;
+  color: var(--embers-text);
 }
 
 .embers-topic-item--active {
@@ -240,7 +262,7 @@
 
 .embers-topic-badge {
   font-size: 11.5px;
-  color: #666666;
+  color: var(--embers-text-faint);
   tabular-nums: true;
   font-weight: 500;
   margin-left: 8px;
@@ -296,7 +318,7 @@
 .embers-search-input {
   width: 100%;
   height: 34px;
-  background-color: #141414;
+  background-color: var(--embers-input-bg);
   border: 1px solid var(--embers-border-strong);
   border-radius: 9999px;
   padding: 0 30px 0 34px;
@@ -308,7 +330,7 @@
 
 .embers-search-input:focus {
   border-color: var(--embers-green);
-  background-color: #161616;
+  background-color: var(--embers-bg);
 }
 
 .embers-search-input::placeholder {
@@ -328,7 +350,7 @@
 }
 
 .embers-search-clear:hover {
-  color: #fff;
+  color: var(--embers-text);
 }
 
 .embers-topbar-actions {
@@ -345,7 +367,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #141414;
+  background-color: var(--embers-input-bg);
   border: 1px solid var(--embers-border-strong);
   color: var(--embers-text-dim);
   cursor: pointer;
@@ -354,9 +376,9 @@
 }
 
 .embers-icon-btn:hover {
-  background-color: #1a1a1a;
-  border-color: #383838;
-  color: #fff;
+  background-color: var(--embers-btn-hover);
+  border-color: var(--embers-border-strong);
+  color: var(--embers-text);
 }
 
 .embers-icon-btn--active {
@@ -381,11 +403,11 @@
   top: 44px;
   right: 0;
   width: 270px;
-  background-color: #141414;
+  background-color: var(--embers-card-bg);
   border: 1px solid var(--embers-border-strong);
   border-radius: 12px;
   padding: 14px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+  box-shadow: var(--embers-shadow);
   z-index: 100;
   animation: embersPopIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -454,7 +476,7 @@
   width: 36px;
   height: 20px;
   border-radius: 9999px;
-  background-color: #2b2b2b;
+  background-color: var(--embers-switch-off);
   border: none;
   cursor: pointer;
   position: relative;
@@ -472,15 +494,15 @@
   top: 2px;
   left: 2px;
   transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
 .embers-switch--on {
-  background-color: var(--embers-green);
+  background-color: var(--embers-green) !important;
 }
 
 .embers-switch--on.bg-\[\#f59e0b\] {
-  background-color: #f59e0b;
+  background-color: #f59e0b !important;
 }
 
 .embers-switch--on .embers-switch-thumb {
@@ -489,7 +511,7 @@
 
 .embers-filter-divider {
   height: 1px;
-  background-color: #222222;
+  background-color: var(--embers-border);
   margin: 12px 0;
 }
 
@@ -504,7 +526,7 @@
 .embers-diff-pills {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  background-color: #0d0d0d;
+  background-color: var(--embers-pills-bg);
   border: 1px solid var(--embers-border-strong);
   border-radius: 8px;
   padding: 2px;
@@ -524,27 +546,27 @@
 }
 
 .embers-diff-pill-btn:hover {
-  color: #fff;
+  color: var(--embers-text);
 }
 
 .embers-diff-pill-btn--active {
-  background-color: #242424;
-  color: #fff;
+  background-color: var(--embers-btn-hover);
+  color: var(--embers-text);
 }
 
 .embers-diff-pill-btn--easy {
   color: var(--embers-easy) !important;
-  background-color: #0c271e !important;
+  background-color: var(--embers-green-dark) !important;
 }
 
 .embers-diff-pill-btn--medium {
   color: var(--embers-med) !important;
-  background-color: #2b200b !important;
+  background-color: rgba(217, 119, 6, 0.12) !important;
 }
 
 .embers-diff-pill-btn--hard {
   color: var(--embers-hard) !important;
-  background-color: #2d0e14 !important;
+  background-color: rgba(220, 38, 38, 0.12) !important;
 }
 
 /* Sort by difficulty row */
@@ -562,7 +584,7 @@
   border-radius: 6px;
   font-size: 11.5px;
   font-weight: 600;
-  background-color: #1a1a1a;
+  background-color: var(--embers-btn-bg);
   border: 1px solid var(--embers-border-strong);
   color: var(--embers-text-dim);
   cursor: pointer;
@@ -570,8 +592,8 @@
 }
 
 .embers-sort-btn:hover {
-  color: #fff;
-  border-color: #383838;
+  color: var(--embers-text);
+  border-color: var(--embers-border-strong);
 }
 
 .embers-sort-btn--active {
@@ -640,7 +662,7 @@
 .embers-danger-btn--disabled {
   opacity: 0.35;
   cursor: not-allowed;
-  color: #888888;
+  color: var(--embers-text-faint);
 }
 
 /* ─── Table View ────────────────────────────────────────────────────────── */
@@ -656,7 +678,7 @@
 }
 
 .embers-table-container::-webkit-scrollbar-thumb {
-  background: #222;
+  background: var(--embers-border);
   border-radius: 4px;
 }
 
@@ -721,11 +743,11 @@
 }
 
 .embers-row:hover {
-  background-color: #121212;
+  background-color: var(--embers-row-hover);
 }
 
 .embers-row--solved {
-  opacity: 0.75;
+  opacity: 0.72;
 }
 
 .embers-td {
@@ -762,7 +784,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid #444444;
+  border: 1.5px solid var(--embers-check-idle);
   background: transparent;
   color: transparent;
   cursor: pointer;
@@ -777,6 +799,10 @@
 .embers-check-btn--solved {
   border-color: var(--embers-green);
   background-color: var(--embers-green);
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .embers-check-btn--solved {
   color: #0a0a0a !important;
 }
 
@@ -789,13 +815,13 @@
   justify-content: center;
   background: transparent;
   border: none;
-  color: #444444;
+  color: var(--embers-check-idle);
   cursor: pointer;
   transition: color 0.15s ease;
 }
 
 .embers-star-btn:hover {
-  color: #888888;
+  color: var(--embers-text-dim);
 }
 
 .embers-star-btn--active {
@@ -864,7 +890,7 @@
 .embers-empty-title {
   font-size: 15px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--embers-text);
 }
 
 .embers-empty-desc {
@@ -887,7 +913,7 @@
 }
 
 .embers-empty-reset-btn:hover {
-  background-color: #143d27;
+  background-color: var(--embers-btn-hover);
 }
 
 /* ─── Danger Zone Modal ─────────────────────────────────────────────────── */
@@ -911,11 +937,11 @@
 .embers-modal-card {
   width: 420px;
   max-width: 90vw;
-  background-color: #141414;
+  background-color: var(--embers-card-bg);
   border: 1px solid var(--embers-border-strong);
   border-radius: 14px;
   padding: 22px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  box-shadow: var(--embers-shadow);
   animation: embersModalZoom 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -940,7 +966,7 @@
 .embers-modal-title {
   font-size: 16px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--embers-text);
   margin: 0;
 }
 
@@ -965,14 +991,14 @@
   font-weight: 500;
   background: transparent;
   border: 1px solid var(--embers-border-strong);
-  color: #cccccc;
+  color: var(--embers-text-dim);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .embers-modal-cancel-btn:hover {
-  background-color: #202020;
-  color: #fff;
+  background-color: var(--embers-btn-hover);
+  color: var(--embers-text);
 }
 
 .embers-modal-confirm-btn {
@@ -990,3 +1016,115 @@
 .embers-modal-confirm-btn:hover {
   background-color: #dc2626;
 }
+
+/* ══════════════════════════════════════════════
+   FULLSCREEN MODE (Zoom in & Hide all other app chrome)
+   ══════════════════════════════════════════════ */
+.embers-root--fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  z-index: 99999 !important;
+  background-color: var(--embers-bg) !important;
+}
+
+/* Zoomed-in enhanced immersion */
+.embers-root--fullscreen .embers-topbar {
+  height: 58px;
+  padding: 0 28px;
+}
+
+.embers-root--fullscreen .embers-search-box {
+  max-width: 380px;
+}
+
+.embers-root--fullscreen .embers-search-input {
+  height: 38px;
+  font-size: 13.5px;
+}
+
+.embers-root--fullscreen .embers-sidebar {
+  width: 250px;
+}
+
+.embers-root--fullscreen .embers-sidebar--collapsed {
+  width: 58px;
+}
+
+.embers-root--fullscreen .embers-sidebar-header {
+  height: 58px;
+  padding: 0 18px;
+}
+
+.embers-root--fullscreen .embers-sidebar-title {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.embers-root--fullscreen .embers-progress-card {
+  padding: 16px 18px;
+  gap: 16px;
+}
+
+.embers-root--fullscreen .embers-donut-wrap {
+  width: 50px;
+  height: 50px;
+}
+
+.embers-root--fullscreen .embers-donut-text {
+  font-size: 12px;
+}
+
+.embers-root--fullscreen .embers-stat-row {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.embers-root--fullscreen .embers-topic-item {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.embers-root--fullscreen .embers-table-head-row {
+  height: 42px;
+}
+
+.embers-root--fullscreen .embers-th {
+  font-size: 11.5px;
+  padding: 0 14px;
+}
+
+.embers-root--fullscreen .embers-row {
+  height: 46px;
+}
+
+.embers-root--fullscreen .embers-td {
+  padding: 0 14px;
+}
+
+.embers-root--fullscreen .embers-check-btn {
+  width: 24px;
+  height: 24px;
+}
+
+.embers-root--fullscreen .embers-star-btn {
+  width: 24px;
+  height: 24px;
+}
+
+.embers-root--fullscreen .embers-title-link {
+  font-size: 13.5px;
+}
+
+.embers-root--fullscreen .embers-diff-badge {
+  font-size: 12.5px;
+}
+

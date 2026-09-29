@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { CODEX_PROBLEMS, CODEX_CATEGORIES } from '../../../data/practice/codexData.js';
+import { useTheme } from '../../../context/ThemeContext';
 import './CodexTab.css';
 
 /* ─── LocalStorage Keys ─────────────────────────────────────────────────── */
@@ -77,6 +78,20 @@ const MoonIcon = () => (
   </svg>
 );
 
+const SunIcon = () => (
+  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="5" />
+    <line x1="12" y1="1" x2="12" y2="3" />
+    <line x1="12" y1="21" x2="12" y2="23" />
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+    <line x1="1" y1="12" x2="3" y2="12" />
+    <line x1="21" y1="12" x2="23" y2="12" />
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+  </svg>
+);
+
 const ChevronLeftIcon = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="15 18 9 12 15 6" />
@@ -86,6 +101,24 @@ const ChevronLeftIcon = () => (
 const ChevronRightIcon = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="9 18 15 12 9 6" />
+  </svg>
+);
+
+const MaximizeIcon = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="15 3 21 3 21 9" />
+    <polyline points="9 21 3 21 3 15" />
+    <line x1="21" y1="3" x2="14" y2="10" />
+    <line x1="3" y1="21" x2="10" y2="14" />
+  </svg>
+);
+
+const MinimizeIcon = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="4 14 10 14 10 20" />
+    <polyline points="20 10 14 10 14 4" />
+    <line x1="14" y1="10" x2="21" y2="3" />
+    <line x1="3" y1="21" x2="10" y2="14" />
   </svg>
 );
 
@@ -106,6 +139,8 @@ function Switch({ checked, onChange, activeColor = 'bg-[#2cbb5d]' }) {
 
 /* ─── Main Component ────────────────────────────────────────────────────── */
 export default function CodexTab() {
+  const { theme, toggleTheme } = useTheme();
+
   // State: Solved & Starred stored in localStorage
   const [solvedMap, setSolvedMap] = useState(() => {
     try {
@@ -136,6 +171,7 @@ export default function CodexTab() {
   const [sortDiff, setSortDiff] = useState('none'); // 'none' | 'easy_hard' | 'hard_easy'
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try {
       return localStorage.getItem(LS_SIDEBAR_KEY) === 'true';
@@ -147,6 +183,21 @@ export default function CodexTab() {
   const [confirmModal, setConfirmModal] = useState(null); // null | 'reset_progress' | 'clear_stars'
 
   const filterRef = useRef(null);
+
+  // Exit fullscreen on Escape key
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFullscreen]);
+
+  const toggleFullscreen = () => {
+    setIsFullscreen(prev => !prev);
+  };
 
   // Close filter popover on outside click
   useEffect(() => {
@@ -341,12 +392,12 @@ export default function CodexTab() {
   const strokeDashoffset = circumference - (stats.percentage / 100) * circumference;
 
   return (
-    <div className={`embers-root ${sidebarCollapsed ? 'embers-root--sidebar-collapsed' : ''}`}>
+    <div className={`embers-root ${sidebarCollapsed ? 'embers-root--sidebar-collapsed' : ''} ${isFullscreen ? 'embers-root--fullscreen' : ''}`}>
       {/* ─── Sidebar ──────────────────────────────────────────────────────── */}
       <aside className={`embers-sidebar ${sidebarCollapsed ? 'embers-sidebar--collapsed' : ''}`}>
         {/* Header */}
         <div className="embers-sidebar-header">
-          {!sidebarCollapsed && <h1 className="embers-sidebar-title">Ember's Codex</h1>}
+          {!sidebarCollapsed && <h1 className="embers-sidebar-title">Codex</h1>}
           <button
             type="button"
             className="embers-collapse-btn"
@@ -482,14 +533,26 @@ export default function CodexTab() {
               {hasActiveFilters && <span className="embers-filter-dot" />}
             </button>
 
-            {/* Theme Toggle Button (Moon icon) */}
+            {/* Fullscreen Button */}
+            <button
+              type="button"
+              className={`embers-icon-btn ${isFullscreen ? 'embers-icon-btn--active' : ''}`}
+              onClick={toggleFullscreen}
+              title={isFullscreen ? "Exit full screen (Esc)" : "Full screen mode"}
+              aria-label={isFullscreen ? "Exit full screen" : "Full screen mode"}
+            >
+              {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
+            </button>
+
+            {/* Theme Toggle Button */}
             <button
               type="button"
               className="embers-icon-btn"
-              title="Theme"
-              aria-label="Theme"
+              onClick={toggleTheme}
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             >
-              <MoonIcon />
+              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
             </button>
 
             {/* ─── Filter Popover ────────────────────────────────────────── */}

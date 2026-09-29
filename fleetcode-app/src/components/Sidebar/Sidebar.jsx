@@ -208,7 +208,7 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse, mo
           <div className="sb-theme-row">
             <button
               className={`sb-theme-btn${theme === 'light' ? ' sb-theme-btn--on' : ''}`}
-              onClick={() => theme !== 'light' && toggleTheme()}
+              onClick={(e) => theme !== 'light' && toggleTheme(e, 'light')}
               title="Light"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -222,7 +222,7 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse, mo
             </button>
             <button
               className={`sb-theme-btn${theme === 'dark' ? ' sb-theme-btn--on' : ''}`}
-              onClick={() => theme !== 'dark' && toggleTheme()}
+              onClick={(e) => theme !== 'dark' && toggleTheme(e, 'dark')}
               title="Dark"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -232,7 +232,7 @@ export default function Sidebar({ collapsed: propCollapsed, onToggleCollapse, mo
             </button>
           </div>
         ) : (
-          <button className="sb-theme-icon" onClick={toggleTheme} title="Toggle theme">
+          <button className="sb-theme-icon" onClick={(e) => toggleTheme(e)} title="Toggle theme">
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
         )}
